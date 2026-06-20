@@ -1,0 +1,25 @@
+{
+  "name": "SMC Journal — Smart Money Concepts Trading Journal",
+  "short_name": "SMC Journal",
+  "description": "A premium, calendar-based Smart Money Concepts trading journal. Track execution quality and improve trading discipline.",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "theme_color": "#0a0a0f",
+  "background_color": "#0a0a0f",
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["finance", "productivity"]
+}
