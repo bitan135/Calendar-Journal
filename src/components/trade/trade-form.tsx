@@ -298,33 +298,35 @@ export default function TradeForm({ mode, initialDate, existingTrade }: TradeFor
         </div>
 
         {/* Date & Times */}
-        <div className="grid grid-cols-3 gap-3">
+        <div className="space-y-4">
           <div>
             <Label className="text-xs text-muted-foreground mb-1.5 block">Date</Label>
             <Input
               type="date"
               value={form.date}
               onChange={(e) => updateField('date', e.target.value)}
-              className="bg-white/[0.03] border-white/10 [color-scheme:dark]"
+              className="bg-white/[0.05] border-white/10 [color-scheme:dark]"
             />
           </div>
-          <div>
-            <Label className="text-xs text-muted-foreground mb-1.5 block">Entry Time</Label>
-            <Input
-              type="time"
-              value={form.entryTime}
-              onChange={(e) => updateField('entryTime', e.target.value)}
-              className="bg-white/[0.03] border-white/10 [color-scheme:dark]"
-            />
-          </div>
-          <div>
-            <Label className="text-xs text-muted-foreground mb-1.5 block">Exit Time</Label>
-            <Input
-              type="time"
-              value={form.exitTime}
-              onChange={(e) => updateField('exitTime', e.target.value)}
-              className="bg-white/[0.03] border-white/10 [color-scheme:dark]"
-            />
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <Label className="text-xs text-muted-foreground mb-1.5 block">Entry Time</Label>
+              <Input
+                type="time"
+                value={form.entryTime}
+                onChange={(e) => updateField('entryTime', e.target.value)}
+                className="bg-white/[0.05] border-white/10 [color-scheme:dark]"
+              />
+            </div>
+            <div>
+              <Label className="text-xs text-muted-foreground mb-1.5 block">Exit Time</Label>
+              <Input
+                type="time"
+                value={form.exitTime}
+                onChange={(e) => updateField('exitTime', e.target.value)}
+                className="bg-white/[0.05] border-white/10 [color-scheme:dark]"
+              />
+            </div>
           </div>
         </div>
       </Section>
@@ -648,7 +650,7 @@ export default function TradeForm({ mode, initialDate, existingTrade }: TradeFor
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3 }}
-        className="sticky bottom-[calc(4.5rem+env(safe-area-inset-bottom))] lg:bottom-4 z-20 pt-2"
+        className="sticky bottom-[90px] lg:bottom-4 z-20 pt-2"
       >
         <button
           onClick={handleSave}

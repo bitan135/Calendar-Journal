@@ -214,7 +214,7 @@
   }
 
   .pt-safe {
-    padding-top: max(1rem, calc(env(safe-area-inset-top) + 0.5rem));
+    padding-top: calc(env(safe-area-inset-top) + 1.5rem);
   }
 
   /* Accent border left (for trade cards) */
