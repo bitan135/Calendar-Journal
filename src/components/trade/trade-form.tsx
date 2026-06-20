@@ -305,26 +305,26 @@ export default function TradeForm({ mode, initialDate, existingTrade }: TradeFor
               type="date"
               value={form.date}
               onChange={(e) => updateField('date', e.target.value)}
-              className="bg-white/[0.05] border-white/10 [color-scheme:dark]"
+              className="bg-white/[0.05] border-white/10 [color-scheme:dark] w-full max-w-full"
             />
           </div>
-          <div className="grid grid-cols-2 gap-3">
-            <div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="min-w-0">
               <Label className="text-xs text-muted-foreground mb-1.5 block">Entry Time</Label>
               <Input
                 type="time"
                 value={form.entryTime}
                 onChange={(e) => updateField('entryTime', e.target.value)}
-                className="bg-white/[0.05] border-white/10 [color-scheme:dark]"
+                className="bg-white/[0.05] border-white/10 [color-scheme:dark] w-full max-w-full"
               />
             </div>
-            <div>
+            <div className="min-w-0">
               <Label className="text-xs text-muted-foreground mb-1.5 block">Exit Time</Label>
               <Input
                 type="time"
                 value={form.exitTime}
                 onChange={(e) => updateField('exitTime', e.target.value)}
-                className="bg-white/[0.05] border-white/10 [color-scheme:dark]"
+                className="bg-white/[0.05] border-white/10 [color-scheme:dark] w-full max-w-full"
               />
             </div>
           </div>
