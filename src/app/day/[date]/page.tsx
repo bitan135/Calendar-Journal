@@ -31,6 +31,34 @@ export default function DayPage({ params }: { params: Promise<{ date: string }> 
     { label: 'Worst Trade', value: formatCurrency(summary.worstTrade), icon: TrendingDown, color: 'text-red-400' },
   ];
 
+  if (loading) {
+    return (
+      <>
+        <PageHeader
+          title={formatDateFull(date)}
+          subtitle="Loading trades..."
+          showBack
+          backHref="/"
+        />
+        <div className="px-4 lg:px-8 py-6 max-w-6xl mx-auto space-y-8">
+          {/* Skeleton Stats Grid */}
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
+            {[1, 2, 3, 4, 5, 6].map((i) => (
+              <div key={i} className="bg-white/[0.02] border border-white/5 rounded-xl p-4 h-20 animate-shimmer" />
+            ))}
+          </div>
+          {/* Skeleton Trades List */}
+          <div className="space-y-3">
+            <div className="h-4 w-24 bg-white/5 rounded animate-shimmer mb-4" />
+            {[1, 2].map((i) => (
+              <div key={i} className="bg-white/[0.02] border border-white/5 rounded-xl p-4 h-24 animate-shimmer" />
+            ))}
+          </div>
+        </div>
+      </>
+    );
+  }
+
   return (
     <>
       <PageHeader
@@ -38,6 +66,15 @@ export default function DayPage({ params }: { params: Promise<{ date: string }> 
         subtitle={`${summary.tradeCount} trade${summary.tradeCount !== 1 ? 's' : ''}`}
         showBack
         backHref="/"
+        actions={
+          <button
+            onClick={() => router.push(`/trade/new?date=${date}`)}
+            className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-black text-xs font-bold transition-all shadow-md shadow-cyan-500/10 active:scale-95"
+          >
+            <Plus className="w-4 h-4" />
+            <span className="hidden sm:inline">Log Trade</span>
+          </button>
+        }
       />
 
       <div className="px-4 lg:px-8 py-6 max-w-6xl mx-auto">
@@ -155,7 +192,7 @@ export default function DayPage({ params }: { params: Promise<{ date: string }> 
         <motion.button
           initial={{ scale: 0, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
-          transition={{ delay: 0.5, type: 'spring', stiffness: 200 }}
+          transition={{ type: 'spring', stiffness: 200, damping: 15 }}
           onClick={() => router.push(`/trade/new?date=${date}`)}
           className="fixed bottom-24 lg:bottom-8 right-6 z-40 flex items-center gap-2 px-5 py-3.5 rounded-2xl bg-gradient-to-r from-cyan-500 to-blue-500 text-black font-bold text-sm shadow-lg shadow-cyan-500/25 hover:shadow-cyan-500/40 transition-shadow animate-pulse-glow"
           aria-label="Log Trade"
