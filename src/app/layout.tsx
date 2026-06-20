@@ -35,10 +35,6 @@ export const metadata: Metadata = {
     statusBarStyle: 'black-translucent',
     title: 'SMC Journal',
   },
-  icons: {
-    icon: '/icons/icon-192.png',
-    apple: '/icons/icon-192.png',
-  },
 };
 
 export const viewport: Viewport = {

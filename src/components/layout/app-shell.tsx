@@ -34,9 +34,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
       <aside className="hidden lg:flex flex-col w-[240px] fixed top-0 left-0 h-full z-40 glass-nav">
         {/* Logo */}
         <div className="flex items-center gap-3 px-6 py-6 border-b border-white/5">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-cyan-400 to-blue-500 flex items-center justify-center">
-            <CalendarDays className="w-5 h-5 text-white" />
-          </div>
+          <img src="/icons/icon-192.png" alt="SMC Journal Logo" className="w-9 h-9 rounded-[10px] shadow-lg shadow-cyan-500/20 ring-1 ring-white/10" />
           <div>
             <h1 className="font-bold text-sm tracking-tight">SMC Journal</h1>
             <p className="text-[10px] text-muted-foreground tracking-wide uppercase">Trading Terminal</p>
@@ -82,7 +80,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 lg:ml-[240px] min-h-[100dvh] pb-20 lg:pb-0">
+      <main className="flex-1 lg:ml-[240px] min-h-[100dvh] pb-28 lg:pb-0">
         <AnimatePresence mode="wait">
           <motion.div
             key={pathname}

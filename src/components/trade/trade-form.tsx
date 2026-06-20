@@ -365,6 +365,7 @@ export default function TradeForm({ mode, initialDate, existingTrade }: TradeFor
             <Label className="text-xs text-muted-foreground mb-1.5 block">Lot Size</Label>
             <Input
               type="number"
+              inputMode="decimal"
               step="0.01"
               value={form.lotSize}
               onChange={(e) => updateField('lotSize', e.target.value)}
@@ -375,6 +376,7 @@ export default function TradeForm({ mode, initialDate, existingTrade }: TradeFor
             <Label className="text-xs text-muted-foreground mb-1.5 block">Entry Price</Label>
             <Input
               type="number"
+              inputMode="decimal"
               step="0.00001"
               value={form.entryPrice}
               onChange={(e) => updateField('entryPrice', e.target.value)}
@@ -386,6 +388,7 @@ export default function TradeForm({ mode, initialDate, existingTrade }: TradeFor
             <Label className="text-xs text-muted-foreground mb-1.5 block">Stop Loss</Label>
             <Input
               type="number"
+              inputMode="decimal"
               step="0.00001"
               value={form.stopLoss}
               onChange={(e) => updateField('stopLoss', e.target.value)}
@@ -397,6 +400,7 @@ export default function TradeForm({ mode, initialDate, existingTrade }: TradeFor
             <Label className="text-xs text-muted-foreground mb-1.5 block">Take Profit</Label>
             <Input
               type="number"
+              inputMode="decimal"
               step="0.00001"
               value={form.takeProfit}
               onChange={(e) => updateField('takeProfit', e.target.value)}
@@ -418,6 +422,7 @@ export default function TradeForm({ mode, initialDate, existingTrade }: TradeFor
             <Label className="text-xs text-muted-foreground mb-1.5 block">Profit / Loss ($)</Label>
             <Input
               type="number"
+              inputMode="decimal"
               step="0.01"
               value={form.profitLoss}
               onChange={(e) => updateField('profitLoss', e.target.value)}
@@ -569,9 +574,11 @@ export default function TradeForm({ mode, initialDate, existingTrade }: TradeFor
                 <button
                   type="button"
                   onClick={() => removeImage(images.indexOf(img))}
-                  className="absolute top-1 right-1 w-6 h-6 rounded-full bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                  className="absolute -top-2 -right-2 p-2 w-10 h-10 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
                 >
-                  <X className="w-3 h-3 text-white" />
+                  <div className="w-6 h-6 rounded-full bg-black/80 flex items-center justify-center">
+                    <X className="w-3.5 h-3.5 text-white" />
+                  </div>
                 </button>
               </div>
             ))}
@@ -594,9 +601,11 @@ export default function TradeForm({ mode, initialDate, existingTrade }: TradeFor
                 <button
                   type="button"
                   onClick={() => removeImage(images.indexOf(img))}
-                  className="absolute top-1 right-1 w-6 h-6 rounded-full bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                  className="absolute -top-2 -right-2 p-2 w-10 h-10 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
                 >
-                  <X className="w-3 h-3 text-white" />
+                  <div className="w-6 h-6 rounded-full bg-black/80 flex items-center justify-center">
+                    <X className="w-3.5 h-3.5 text-white" />
+                  </div>
                 </button>
               </div>
             ))}
@@ -639,7 +648,7 @@ export default function TradeForm({ mode, initialDate, existingTrade }: TradeFor
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3 }}
-        className="sticky bottom-20 lg:bottom-4 z-20 pt-2"
+        className="sticky bottom-24 lg:bottom-4 z-20 pt-2 pb-safe lg:pb-0"
       >
         <button
           onClick={handleSave}
