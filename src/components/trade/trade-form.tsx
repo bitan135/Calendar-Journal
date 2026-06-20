@@ -648,7 +648,7 @@ export default function TradeForm({ mode, initialDate, existingTrade }: TradeFor
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3 }}
-        className="sticky bottom-24 lg:bottom-4 z-20 pt-2 pb-safe lg:pb-0"
+        className="sticky bottom-[calc(4.5rem+env(safe-area-inset-bottom))] lg:bottom-4 z-20 pt-2"
       >
         <button
           onClick={handleSave}

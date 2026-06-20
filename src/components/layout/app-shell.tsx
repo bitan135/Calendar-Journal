@@ -80,7 +80,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 lg:ml-[240px] min-h-[100dvh] pb-28 lg:pb-0">
+      <main className="flex-1 lg:ml-[240px] min-h-[100dvh] pb-24 lg:pb-0">
         <AnimatePresence mode="wait">
           <motion.div
             key={pathname}
