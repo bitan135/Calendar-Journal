@@ -85,7 +85,7 @@ function Section({
         transition={{ duration: 0.2 }}
         className="overflow-hidden"
       >
-        <div className="px-4 pb-4 space-y-4">
+        <div className="px-4 pb-5 space-y-5">
           {children}
         </div>
       </motion.div>
@@ -362,7 +362,7 @@ export default function TradeForm({ mode, initialDate, existingTrade }: TradeFor
           Risk Management
           ================================================================ */}
       <Section title="Risk Management" defaultOpen={true}>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <Label className="text-xs text-muted-foreground mb-1.5 block">Lot Size</Label>
             <Input
