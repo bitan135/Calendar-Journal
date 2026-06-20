@@ -34,7 +34,7 @@ export default function PageHeader({
       initial={{ opacity: 0, y: -10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      className="sticky top-0 z-30 glass-nav px-4 lg:px-8 py-4"
+      className="sticky top-0 z-30 glass-nav px-4 lg:px-8 pt-safe pb-4"
     >
       <div className="flex items-center justify-between max-w-6xl mx-auto">
         <div className="flex items-center gap-3">

@@ -78,12 +78,10 @@ export default function HomePage() {
   return (
     <>
       {/* Header */}
-      <header className="sticky top-0 z-30 glass-nav px-4 lg:px-8 py-4">
+      <header className="sticky top-0 z-30 glass-nav px-4 lg:px-8 pt-safe pb-4">
         <div className="flex items-center justify-between max-w-6xl mx-auto">
           <div className="lg:hidden flex items-center gap-3">
-            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-cyan-400 to-blue-500 flex items-center justify-center">
-              <BarChart2 className="w-4 h-4 text-white" />
-            </div>
+            <img src="/icons/icon-192.png" alt="SMC Journal Logo" className="w-8 h-8 rounded-xl shadow-lg shadow-cyan-500/20 ring-1 ring-white/10" />
             <h1 className="text-lg font-bold tracking-tight">SMC Journal</h1>
           </div>
           <div className="hidden lg:block">
