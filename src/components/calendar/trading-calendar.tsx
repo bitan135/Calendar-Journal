@@ -92,25 +92,25 @@ export default function TradingCalendar({
       <div className="flex items-center justify-between mb-6 px-1">
         <button
           onClick={handlePrev}
-          className="flex items-center justify-center w-10 h-10 rounded-xl hover:bg-white/5 transition-colors"
+          className="flex items-center justify-center w-8 h-8 rounded-lg hover:bg-white/5 transition-all active:scale-90 cursor-pointer"
           aria-label="Previous month"
         >
-          <ChevronLeft className="w-5 h-5 text-muted-foreground" />
+          <ChevronLeft className="w-4 h-4 text-muted-foreground hover:text-foreground" />
         </button>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-4">
           <motion.h2
             key={`${year}-${month}`}
-            initial={{ opacity: 0, y: direction * 10 }}
+            initial={{ opacity: 0, y: direction * 8 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.2 }}
-            className="text-xl font-bold tracking-tight"
+            transition={{ duration: 0.15, ease: 'easeOut' }}
+            className="text-base font-semibold tracking-[-0.015em]"
           >
             {format(new Date(year, month), 'MMMM yyyy')}
           </motion.h2>
           <button
             onClick={onGoToday}
-            className="text-[10px] font-semibold uppercase tracking-widest text-cyan-400 hover:text-cyan-300 px-2.5 py-1 rounded-lg bg-cyan-500/10 hover:bg-cyan-500/20 transition-all"
+            className="text-xs font-semibold text-primary hover:opacity-80 transition-all active:scale-95 cursor-pointer"
           >
             Today
           </button>
@@ -118,19 +118,19 @@ export default function TradingCalendar({
 
         <button
           onClick={handleNext}
-          className="flex items-center justify-center w-10 h-10 rounded-xl hover:bg-white/5 transition-colors"
+          className="flex items-center justify-center w-8 h-8 rounded-lg hover:bg-white/5 transition-all active:scale-90 cursor-pointer"
           aria-label="Next month"
         >
-          <ChevronRight className="w-5 h-5 text-muted-foreground" />
+          <ChevronRight className="w-4 h-4 text-muted-foreground hover:text-foreground" />
         </button>
       </div>
 
       {/* Week Day Headers */}
-      <div className="grid grid-cols-7 mb-2">
+      <div className="grid grid-cols-7 mb-1.5">
         {weekDays.map((day) => (
           <div
             key={day}
-            className="text-center text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/60 py-2"
+            className="text-center text-[9px] font-semibold uppercase tracking-wider text-muted-foreground/50 py-1"
           >
             {day}
           </div>
@@ -141,10 +141,10 @@ export default function TradingCalendar({
       <AnimatePresence mode="wait">
         <motion.div
           key={`${year}-${month}`}
-          initial={{ opacity: 0, x: direction * 30 }}
-          animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: direction * -30 }}
-          transition={{ duration: 0.25, ease: 'easeInOut' }}
+          initial={{ opacity: 0, y: direction * 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: direction * -10 }}
+          transition={{ duration: 0.2, ease: 'easeInOut' }}
           className="grid grid-cols-7 gap-1"
         >
           {calendarDays.map((date, index) => {
@@ -158,41 +158,41 @@ export default function TradingCalendar({
             return (
               <motion.button
                 key={dateStr}
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: index * 0.008, duration: 0.2 }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: index * 0.003, duration: 0.15 }}
                 onClick={() => handleDayClick(date)}
                 className={`
-                  relative flex flex-col items-center justify-start gap-0.5
-                  min-h-[72px] lg:min-h-[88px] p-1.5 lg:p-2 rounded-xl
-                  transition-all duration-200 group
-                  ${inMonth ? 'text-foreground' : 'text-muted-foreground/30'}
-                  ${today ? 'ring-1 ring-cyan-500/40 bg-cyan-500/5' : ''}
-                  ${hasTrades ? 'glass-card cursor-pointer' : 'hover:bg-white/[0.02] cursor-pointer'}
+                  relative flex flex-col items-center justify-start gap-1
+                  min-h-[76px] lg:min-h-[92px] p-2 rounded-lg
+                  transition-all duration-150 group border border-transparent
+                  ${inMonth ? 'text-foreground' : 'text-muted-foreground/20'}
+                  ${today ? 'bg-primary/5 border-primary/20' : ''}
+                  ${hasTrades ? 'bg-[#1c1c1e] hover:bg-[#2c2c2e] border-white/5 cursor-pointer shadow-sm' : 'hover:bg-white/[0.02] cursor-pointer'}
                 `}
                 aria-label={`${format(date, 'MMMM d, yyyy')}${hasTrades ? `, ${summary!.tradeCount} trades, P&L ${pnl}` : ''}`}
               >
                 {/* Day Number */}
-                <span
+                <div
                   className={`
-                    text-xs font-medium
-                    ${today ? 'text-cyan-400 font-bold' : ''}
+                    w-6 h-6 flex items-center justify-center text-xs font-semibold rounded-full
+                    ${today ? 'bg-primary text-white font-bold shadow-sm' : ''}
                   `}
                 >
                   {format(date, 'd')}
-                </span>
+                </div>
 
                 {/* P&L Badge */}
                 {hasTrades && inMonth && (
                   <div
                     className={`
-                      text-[10px] lg:text-xs font-mono-num font-semibold
-                      px-1.5 py-0.5 rounded-md mt-0.5
+                      text-[9px] lg:text-xs font-mono-num font-semibold
+                      px-1.5 py-0.5 rounded
                       ${pnl > 0
-                        ? 'bg-cyan-500/15 text-cyan-400'
+                        ? 'bg-profit/10 text-profit'
                         : pnl < 0
-                          ? 'bg-red-500/15 text-red-400'
-                          : 'bg-slate-500/15 text-slate-400'
+                          ? 'bg-loss/10 text-loss'
+                          : 'bg-muted-foreground/10 text-muted-foreground'
                       }
                     `}
                   >
@@ -208,12 +208,12 @@ export default function TradingCalendar({
                         key={i}
                         className={`
                           w-1 h-1 rounded-full
-                          ${pnl > 0 ? 'bg-cyan-400/60' : pnl < 0 ? 'bg-red-400/60' : 'bg-slate-400/60'}
+                          ${pnl > 0 ? 'bg-profit/60' : pnl < 0 ? 'bg-loss/60' : 'bg-muted-foreground/60'}
                         `}
                       />
                     ))}
                     {summary!.tradeCount > 4 && (
-                      <span className="text-[8px] text-muted-foreground ml-0.5">+{summary!.tradeCount - 4}</span>
+                      <span className="text-[7px] text-muted-foreground/80 ml-0.5 font-medium">+{summary!.tradeCount - 4}</span>
                     )}
                   </div>
                 )}
@@ -224,17 +224,17 @@ export default function TradingCalendar({
       </AnimatePresence>
 
       {/* Legend */}
-      <div className="flex items-center justify-center gap-6 mt-6 text-[11px] text-muted-foreground">
+      <div className="flex items-center justify-center gap-6 mt-6 text-[10px] text-muted-foreground/75 font-medium">
         <div className="flex items-center gap-1.5">
-          <div className="w-2.5 h-2.5 rounded-sm bg-cyan-500/20 border border-cyan-500/30" />
+          <div className="w-2 h-2 rounded-[3px] bg-profit" />
           <span>Profitable</span>
         </div>
         <div className="flex items-center gap-1.5">
-          <div className="w-2.5 h-2.5 rounded-sm bg-red-500/20 border border-red-500/30" />
+          <div className="w-2 h-2 rounded-[3px] bg-loss" />
           <span>Losing</span>
         </div>
         <div className="flex items-center gap-1.5">
-          <div className="w-2.5 h-2.5 rounded-sm bg-slate-500/20 border border-slate-500/30" />
+          <div className="w-2 h-2 rounded-[3px] bg-[#1c1c1e] border border-white/10" />
           <span>No Trades</span>
         </div>
       </div>

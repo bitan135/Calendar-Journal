@@ -47,8 +47,8 @@ export const SESSION_LABELS: Record<Session, string> = {
 // ============================================================================
 
 export const BIAS_OPTIONS: { value: Bias; label: string; color: string }[] = [
-  { value: 'bullish', label: 'Bullish', color: '#00d4ff' },
-  { value: 'bearish', label: 'Bearish', color: '#ff4757' },
+  { value: 'bullish', label: 'Bullish', color: '#30d158' },
+  { value: 'bearish', label: 'Bearish', color: '#ff453a' },
 ];
 
 export const INTRADAY_BIAS_OPTIONS: { value: IntradayBias; label: string }[] = [
@@ -86,8 +86,8 @@ export const ENTRY_MODEL_LABELS: Record<EntryModel, string> = {
 // ============================================================================
 
 export const DIRECTIONS = [
-  { value: 'buy' as const, label: 'Buy', color: '#00d4ff' },
-  { value: 'sell' as const, label: 'Sell', color: '#ff4757' },
+  { value: 'buy' as const, label: 'Buy', color: '#30d158' },
+  { value: 'sell' as const, label: 'Sell', color: '#ff453a' },
 ];
 
 // ============================================================================
@@ -95,15 +95,15 @@ export const DIRECTIONS = [
 // ============================================================================
 
 export const OUTCOME_COLORS = {
-  win: '#00d4ff',
-  loss: '#ff4757',
-  breakeven: '#64748b',
+  win: '#30d158',
+  loss: '#ff453a',
+  breakeven: '#8e8e93',
 } as const;
 
 export const PNL_COLORS = {
-  profit: '#00d4ff',
-  loss: '#ff4757',
-  neutral: '#64748b',
+  profit: '#30d158',
+  loss: '#ff453a',
+  neutral: '#8e8e93',
 } as const;
 
 // ============================================================================
@@ -111,14 +111,14 @@ export const PNL_COLORS = {
 // ============================================================================
 
 export const CHART_COLORS = {
-  primary: '#00d4ff',
-  secondary: '#a78bfa',
-  tertiary: '#f97316',
-  positive: '#00d4ff',
-  negative: '#ff4757',
-  grid: '#1e1e2e',
-  axis: '#4a4a6a',
-  tooltip: '#1a1a2e',
+  primary: '#2997ff',
+  secondary: '#bf5af2',
+  tertiary: '#ff9f0a',
+  positive: '#30d158',
+  negative: '#ff453a',
+  grid: 'rgba(255, 255, 255, 0.06)',
+  axis: '#8e8e93',
+  tooltip: '#2c2c2e',
 } as const;
 
 // ============================================================================

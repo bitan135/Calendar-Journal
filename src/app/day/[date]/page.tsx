@@ -27,8 +27,8 @@ export default function DayPage({ params }: { params: Promise<{ date: string }> 
     { label: 'Trades', value: String(summary.tradeCount), icon: BarChart2, color: 'text-foreground' },
     { label: 'Win Rate', value: formatPercentage(summary.winRate), icon: Target, color: 'text-foreground' },
     { label: 'Avg RR', value: formatRR(summary.avgRR), icon: Award, color: 'text-foreground' },
-    { label: 'Best Trade', value: formatCurrency(summary.bestTrade), icon: TrendingUp, color: 'text-cyan-400' },
-    { label: 'Worst Trade', value: formatCurrency(summary.worstTrade), icon: TrendingDown, color: 'text-red-400' },
+    { label: 'Best Trade', value: formatCurrency(summary.bestTrade), icon: TrendingUp, color: 'text-profit' },
+    { label: 'Worst Trade', value: formatCurrency(summary.worstTrade), icon: TrendingDown, color: 'text-loss' },
   ];
 
   if (loading) {
@@ -69,9 +69,9 @@ export default function DayPage({ params }: { params: Promise<{ date: string }> 
         actions={
           <button
             onClick={() => router.push(`/trade/new?date=${date}`)}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-black text-xs font-bold transition-all shadow-md shadow-cyan-500/10 active:scale-95"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary hover:opacity-90 text-white text-xs font-semibold transition-all shadow-sm active:scale-95 cursor-pointer"
           >
-            <Plus className="w-4 h-4" />
+            <Plus className="w-3.5 h-3.5" />
             <span className="hidden sm:inline">Log Trade</span>
           </button>
         }
@@ -81,21 +81,21 @@ export default function DayPage({ params }: { params: Promise<{ date: string }> 
         {/* Stats Grid */}
         {summary.tradeCount > 0 && (
           <motion.div
-            initial={{ opacity: 0, y: 10 }}
+            initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             className="grid grid-cols-2 lg:grid-cols-3 gap-3 mb-8"
           >
             {stats.map((stat, index) => (
               <motion.div
                 key={stat.label}
-                initial={{ opacity: 0, scale: 0.95 }}
+                initial={{ opacity: 0, scale: 0.98 }}
                 animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: index * 0.05 }}
-                className="glass-card rounded-xl p-4"
+                transition={{ delay: index * 0.03, duration: 0.15 }}
+                className="glass-card rounded-xl p-4 border border-white/5 shadow-sm"
               >
                 <div className="flex items-center gap-2 mb-2">
-                  <stat.icon className="w-3.5 h-3.5 text-muted-foreground" />
-                  <p className="text-[10px] uppercase tracking-widest text-muted-foreground">
+                  <stat.icon className="w-3.5 h-3.5 text-muted-foreground/60" />
+                  <p className="text-[9px] uppercase tracking-wider text-muted-foreground/60 font-medium">
                     {stat.label}
                   </p>
                 </div>
@@ -110,18 +110,18 @@ export default function DayPage({ params }: { params: Promise<{ date: string }> 
         {/* Trade List */}
         {trades.length > 0 ? (
           <div className="space-y-3">
-            <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-widest mb-4">
+            <h2 className="text-[10px] font-semibold text-muted-foreground/60 uppercase tracking-wider mb-3">
               Trades
             </h2>
             {trades.map((trade, index) => (
               <motion.div
                 key={trade.id}
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: index * 0.05 }}
+                initial={{ opacity: 0, y: 5 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.03 }}
                 onClick={() => router.push(`/trade/${trade.id}`)}
                 className={`
-                  glass-card rounded-xl p-4 cursor-pointer
+                  glass-card rounded-xl p-4 cursor-pointer hover:bg-[#2c2c2e] transition-all border border-white/5 shadow-sm
                   ${trade.profitLoss > 0
                     ? 'border-l-profit'
                     : trade.profitLoss < 0
@@ -130,30 +130,30 @@ export default function DayPage({ params }: { params: Promise<{ date: string }> 
                   }
                 `}
               >
-                <div className="flex items-center justify-between mb-2">
-                  <div className="flex items-center gap-3">
-                    <span className="text-sm font-bold">{trade.asset}</span>
+                <div className="flex items-center justify-between mb-1.5">
+                  <div className="flex items-center gap-2.5">
+                    <span className="text-sm font-semibold tracking-tight">{trade.asset}</span>
                     <span className={`
-                      text-[10px] font-bold uppercase px-2 py-0.5 rounded-md
+                      text-[9px] font-semibold uppercase px-1.5 py-0.5 rounded
                       ${trade.direction === 'buy'
-                        ? 'bg-cyan-500/15 text-cyan-400'
-                        : 'bg-red-500/15 text-red-400'
+                        ? 'bg-profit/10 text-profit'
+                        : 'bg-loss/10 text-loss'
                       }
                     `}>
                       {trade.direction}
                     </span>
-                    <span className="text-xs text-muted-foreground">
+                    <span className="text-xs text-muted-foreground/60 font-medium">
                       {SESSION_LABELS[trade.session]}
                     </span>
                   </div>
-                  <span className={`text-sm font-bold font-mono-num ${getPnLColor(trade.profitLoss)}`}>
+                  <span className={`text-sm font-semibold font-mono-num ${getPnLColor(trade.profitLoss)}`}>
                     {formatCurrency(trade.profitLoss)}
                   </span>
                 </div>
-                <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                <div className="flex items-center gap-4 text-xs text-muted-foreground/60 font-medium">
                   <span>{formatTime(trade.entryTime)} → {formatTime(trade.exitTime)}</span>
                   <span>RR {formatRR(trade.rrRatio)}</span>
-                  <span className="text-[10px] px-2 py-0.5 rounded-md bg-white/5">
+                  <span className="text-[9px] px-1.5 py-0.5 rounded bg-white/5 border border-white/5 font-mono">
                     {ENTRY_MODEL_LABELS[trade.entryModel]}
                   </span>
                 </div>
@@ -164,22 +164,22 @@ export default function DayPage({ params }: { params: Promise<{ date: string }> 
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.2 }}
+            transition={{ delay: 0.1 }}
             className="flex flex-col items-center justify-center py-20 text-center"
           >
-            <div className="w-16 h-16 rounded-2xl bg-white/5 flex items-center justify-center mb-4">
-              <BarChart2 className="w-8 h-8 text-muted-foreground/40" />
+            <div className="w-12 h-12 rounded-xl bg-white/5 border border-white/5 flex items-center justify-center mb-4">
+              <BarChart2 className="w-6 h-6 text-muted-foreground/40" />
             </div>
-            <h3 className="text-lg font-semibold text-muted-foreground mb-2">No trades recorded</h3>
-            <p className="text-sm text-muted-foreground/60 mb-6 max-w-xs">
+            <h3 className="text-sm font-semibold text-muted-foreground mb-1">No trades recorded</h3>
+            <p className="text-xs text-muted-foreground/60 mb-5 max-w-xs leading-relaxed">
               {today ? 'Start journaling your trades to track performance.' : 'No trades were logged on this day.'}
             </p>
             {today && (
               <button
                 onClick={() => router.push(`/trade/new?date=${date}`)}
-                className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-cyan-500 text-black font-semibold text-sm hover:bg-cyan-400 transition-colors"
+                className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-primary text-white font-semibold text-xs hover:opacity-90 transition-all cursor-pointer shadow-sm active:scale-98"
               >
-                <Plus className="w-4 h-4" />
+                <Plus className="w-3.5 h-3.5" />
                 Log Your First Trade
               </button>
             )}
@@ -190,14 +190,14 @@ export default function DayPage({ params }: { params: Promise<{ date: string }> 
       {/* FAB - Log Trade (only on today) */}
       {today && trades.length > 0 && (
         <motion.button
-          initial={{ scale: 0, opacity: 0 }}
+          initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ type: 'spring', stiffness: 200, damping: 15 }}
           onClick={() => router.push(`/trade/new?date=${date}`)}
-          className="fixed bottom-24 lg:bottom-8 right-6 z-40 flex items-center gap-2 px-5 py-3.5 rounded-2xl bg-gradient-to-r from-cyan-500 to-blue-500 text-black font-bold text-sm shadow-lg shadow-cyan-500/25 hover:shadow-cyan-500/40 transition-shadow animate-pulse-glow"
+          className="fixed bottom-20 lg:bottom-6 right-6 z-40 flex items-center gap-1.5 px-4 py-2.5 rounded-full bg-primary text-white font-semibold text-xs shadow-md hover:opacity-95 transition-all cursor-pointer active:scale-95 border border-white/10"
           aria-label="Log Trade"
         >
-          <Plus className="w-5 h-5" />
+          <Plus className="w-4 h-4" />
           <span>Log Trade</span>
         </motion.button>
       )}

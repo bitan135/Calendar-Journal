@@ -111,16 +111,16 @@ export function getTodayISO(): string {
  * Get the P&L color class
  */
 export function getPnLColor(value: number): string {
-  if (value > 0) return 'text-cyan-400';
-  if (value < 0) return 'text-red-400';
-  return 'text-slate-400';
+  if (value > 0) return 'text-profit';
+  if (value < 0) return 'text-loss';
+  return 'text-muted-foreground';
 }
 
 /**
  * Get the P&L background color class
  */
 export function getPnLBgColor(value: number): string {
-  if (value > 0) return 'bg-cyan-500/20 text-cyan-400';
-  if (value < 0) return 'bg-red-500/20 text-red-400';
-  return 'bg-slate-500/20 text-slate-400';
+  if (value > 0) return 'bg-profit/10 text-profit';
+  if (value < 0) return 'bg-loss/10 text-loss';
+  return 'bg-[#2c2c2e] text-muted-foreground';
 }

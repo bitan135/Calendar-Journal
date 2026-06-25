@@ -70,22 +70,22 @@ function Section({
   const [open, setOpen] = useState(defaultOpen);
 
   return (
-    <div className="glass-card rounded-xl overflow-hidden">
+    <div className="glass-card rounded-lg overflow-hidden border border-white/5 shadow-sm">
       <button
         type="button"
         onClick={() => setOpen(!open)}
-        className="w-full flex items-center justify-between px-4 py-3 text-sm font-semibold hover:bg-white/[0.02] transition-colors"
+        className="w-full flex items-center justify-between px-4 py-3 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/60 hover:bg-white/[0.02] transition-colors cursor-pointer"
       >
         <span>{title}</span>
-        {open ? <ChevronUp className="w-4 h-4 text-muted-foreground" /> : <ChevronDown className="w-4 h-4 text-muted-foreground" />}
+        {open ? <ChevronUp className="w-3.5 h-3.5 text-muted-foreground/60" /> : <ChevronDown className="w-3.5 h-3.5 text-muted-foreground/60" />}
       </button>
       <motion.div
         initial={false}
         animate={{ height: open ? 'auto' : 0, opacity: open ? 1 : 0 }}
-        transition={{ duration: 0.2 }}
+        transition={{ duration: 0.15 }}
         className="overflow-hidden"
       >
-        <div className="px-4 pb-5 space-y-5">
+        <div className="px-4 pb-4.5 space-y-4">
           {children}
         </div>
       </motion.div>
@@ -259,9 +259,9 @@ export default function TradeForm({ mode, initialDate, existingTrade }: TradeFor
       <Section title="Basic Information" defaultOpen={true}>
         {/* Asset */}
         <div>
-          <Label className="text-xs text-muted-foreground mb-1.5 block">Asset</Label>
+          <Label className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/60 mb-1.5 block">Asset</Label>
           <Select value={form.asset} onValueChange={(v) => updateField('asset', v)}>
-            <SelectTrigger className="bg-white/[0.03] border-white/10">
+            <SelectTrigger className="border-white/5 bg-[#2c2c2e]/40">
               <SelectValue placeholder="Select asset" />
             </SelectTrigger>
             <SelectContent>
@@ -274,7 +274,7 @@ export default function TradeForm({ mode, initialDate, existingTrade }: TradeFor
 
         {/* Direction Toggle */}
         <div>
-          <Label className="text-xs text-muted-foreground mb-1.5 block">Direction</Label>
+          <Label className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/60 mb-1.5 block">Direction</Label>
           <div className="grid grid-cols-2 gap-2">
             {DIRECTIONS.map((dir) => (
               <button
@@ -282,12 +282,12 @@ export default function TradeForm({ mode, initialDate, existingTrade }: TradeFor
                 type="button"
                 onClick={() => updateField('direction', dir.value)}
                 className={`
-                  py-2.5 rounded-xl text-sm font-bold uppercase tracking-wide transition-all
+                  py-2 rounded-lg text-xs font-semibold uppercase tracking-wider transition-all active:scale-[0.98] cursor-pointer border
                   ${form.direction === dir.value
                     ? dir.value === 'buy'
-                      ? 'bg-cyan-500/20 text-cyan-400 ring-1 ring-cyan-500/30'
-                      : 'bg-red-500/20 text-red-400 ring-1 ring-red-500/30'
-                    : 'bg-white/[0.03] text-muted-foreground hover:bg-white/[0.06]'
+                      ? 'bg-profit/15 text-profit border-profit/20'
+                      : 'bg-loss/15 text-loss border-loss/20'
+                    : 'bg-[#2c2c2e]/40 text-muted-foreground hover:bg-[#2c2c2e]/60 border-transparent'
                   }
                 `}
               >
@@ -298,33 +298,33 @@ export default function TradeForm({ mode, initialDate, existingTrade }: TradeFor
         </div>
 
         {/* Date & Times */}
-        <div className="space-y-4">
+        <div className="space-y-3">
           <div>
-            <Label className="text-xs text-muted-foreground mb-1.5 block">Date</Label>
+            <Label className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/60 mb-1.5 block">Date</Label>
             <Input
               type="date"
               value={form.date}
               onChange={(e) => updateField('date', e.target.value)}
-              className="bg-white/[0.05] border-white/10 [color-scheme:dark] w-full max-w-full"
+              className="[color-scheme:dark] w-full max-w-full"
             />
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div className="min-w-0">
-              <Label className="text-xs text-muted-foreground mb-1.5 block">Entry Time</Label>
+              <Label className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/60 mb-1.5 block">Entry Time</Label>
               <Input
                 type="time"
                 value={form.entryTime}
                 onChange={(e) => updateField('entryTime', e.target.value)}
-                className="bg-white/[0.05] border-white/10 [color-scheme:dark] w-full max-w-full"
+                className="[color-scheme:dark] w-full max-w-full"
               />
             </div>
             <div className="min-w-0">
-              <Label className="text-xs text-muted-foreground mb-1.5 block">Exit Time</Label>
+              <Label className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/60 mb-1.5 block">Exit Time</Label>
               <Input
                 type="time"
                 value={form.exitTime}
                 onChange={(e) => updateField('exitTime', e.target.value)}
-                className="bg-white/[0.05] border-white/10 [color-scheme:dark] w-full max-w-full"
+                className="[color-scheme:dark] w-full max-w-full"
               />
             </div>
           </div>
@@ -342,16 +342,16 @@ export default function TradeForm({ mode, initialDate, existingTrade }: TradeFor
               type="button"
               onClick={() => updateField('session', session.value)}
               className={`
-                py-3 rounded-xl text-sm font-semibold transition-all
+                py-2 rounded-lg text-xs font-semibold transition-all active:scale-[0.98] cursor-pointer border
                 ${form.session === session.value
-                  ? 'ring-1 ring-white/20 bg-white/10 text-foreground'
-                  : 'bg-white/[0.03] text-muted-foreground hover:bg-white/[0.06]'
+                  ? 'bg-[#2c2c2e] text-white border-white/10'
+                  : 'bg-[#2c2c2e]/40 text-muted-foreground hover:bg-[#2c2c2e]/60 border-transparent'
                 }
               `}
             >
               <div className="text-center">
                 <span className="block">{session.label}</span>
-                <span className="text-[9px] text-muted-foreground/60 mt-0.5 block">{session.timeRange}</span>
+                <span className="text-[8px] text-muted-foreground/50 mt-0.5 block tracking-normal">{session.timeRange}</span>
               </div>
             </button>
           ))}
@@ -362,73 +362,73 @@ export default function TradeForm({ mode, initialDate, existingTrade }: TradeFor
           Risk Management
           ================================================================ */}
       <Section title="Risk Management" defaultOpen={true}>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
           <div>
-            <Label className="text-xs text-muted-foreground mb-1.5 block">Lot Size</Label>
+            <Label className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/60 mb-1.5 block">Lot Size</Label>
             <Input
               type="number"
               inputMode="decimal"
               step="0.01"
               value={form.lotSize}
               onChange={(e) => updateField('lotSize', e.target.value)}
-              className="bg-white/[0.03] border-white/10 font-mono"
+              className="font-mono-num"
             />
           </div>
           <div>
-            <Label className="text-xs text-muted-foreground mb-1.5 block">Entry Price</Label>
+            <Label className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/60 mb-1.5 block">Entry Price</Label>
             <Input
               type="number"
               inputMode="decimal"
               step="0.00001"
               value={form.entryPrice}
               onChange={(e) => updateField('entryPrice', e.target.value)}
-              className="bg-white/[0.03] border-white/10 font-mono"
+              className="font-mono-num"
               placeholder="0.00000"
             />
           </div>
           <div>
-            <Label className="text-xs text-muted-foreground mb-1.5 block">Stop Loss</Label>
+            <Label className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/60 mb-1.5 block">Stop Loss</Label>
             <Input
               type="number"
               inputMode="decimal"
               step="0.00001"
               value={form.stopLoss}
               onChange={(e) => updateField('stopLoss', e.target.value)}
-              className="bg-white/[0.03] border-white/10 font-mono"
+              className="font-mono-num"
               placeholder="0.00000"
             />
           </div>
           <div>
-            <Label className="text-xs text-muted-foreground mb-1.5 block">Take Profit</Label>
+            <Label className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/60 mb-1.5 block">Take Profit</Label>
             <Input
               type="number"
               inputMode="decimal"
               step="0.00001"
               value={form.takeProfit}
               onChange={(e) => updateField('takeProfit', e.target.value)}
-              className="bg-white/[0.03] border-white/10 font-mono"
+              className="font-mono-num"
               placeholder="0.00000"
             />
           </div>
           <div>
-            <Label className="text-xs text-muted-foreground mb-1.5 block">RR Ratio</Label>
+            <Label className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/60 mb-1.5 block">RR Ratio</Label>
             <Input
               type="number"
               step="0.01"
               value={form.rrRatio}
               readOnly
-              className="bg-white/[0.02] border-white/5 font-mono text-muted-foreground"
+              className="font-mono-num text-muted-foreground/60 bg-[#1c1c1e]"
             />
           </div>
           <div>
-            <Label className="text-xs text-muted-foreground mb-1.5 block">Profit / Loss ($)</Label>
+            <Label className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/60 mb-1.5 block">Profit / Loss ($)</Label>
             <Input
               type="number"
               inputMode="decimal"
               step="0.01"
               value={form.profitLoss}
               onChange={(e) => updateField('profitLoss', e.target.value)}
-              className="bg-white/[0.03] border-white/10 font-mono"
+              className="font-mono-num"
               placeholder="0.00"
             />
           </div>
@@ -439,9 +439,9 @@ export default function TradeForm({ mode, initialDate, existingTrade }: TradeFor
           Higher Timeframe Analysis
           ================================================================ */}
       <Section title="Higher Timeframe Analysis" defaultOpen={false}>
-        <div className="space-y-4">
+        <div className="space-y-3.5">
           <div>
-            <Label className="text-xs text-muted-foreground mb-1.5 block">4H Bias</Label>
+            <Label className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/60 mb-1.5 block">4H Bias</Label>
             <div className="grid grid-cols-2 gap-2">
               {BIAS_OPTIONS.map((bias) => (
                 <button
@@ -449,12 +449,12 @@ export default function TradeForm({ mode, initialDate, existingTrade }: TradeFor
                   type="button"
                   onClick={() => updateField('bias4H', bias.value)}
                   className={`
-                    py-2 rounded-xl text-sm font-semibold transition-all
+                    py-1.5 rounded-lg text-xs font-semibold transition-all active:scale-[0.98] cursor-pointer border
                     ${form.bias4H === bias.value
                       ? bias.value === 'bullish'
-                        ? 'bg-cyan-500/20 text-cyan-400 ring-1 ring-cyan-500/30'
-                        : 'bg-red-500/20 text-red-400 ring-1 ring-red-500/30'
-                      : 'bg-white/[0.03] text-muted-foreground hover:bg-white/[0.06]'
+                        ? 'bg-profit/15 text-profit border-profit/20'
+                        : 'bg-loss/15 text-loss border-loss/20'
+                      : 'bg-[#2c2c2e]/40 text-muted-foreground hover:bg-[#2c2c2e]/60 border-transparent'
                     }
                   `}
                 >
@@ -464,7 +464,7 @@ export default function TradeForm({ mode, initialDate, existingTrade }: TradeFor
             </div>
           </div>
           <div>
-            <Label className="text-xs text-muted-foreground mb-1.5 block">1H Bias</Label>
+            <Label className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/60 mb-1.5 block">1H Bias</Label>
             <div className="grid grid-cols-2 gap-2">
               {BIAS_OPTIONS.map((bias) => (
                 <button
@@ -472,12 +472,12 @@ export default function TradeForm({ mode, initialDate, existingTrade }: TradeFor
                   type="button"
                   onClick={() => updateField('bias1H', bias.value)}
                   className={`
-                    py-2 rounded-xl text-sm font-semibold transition-all
+                    py-1.5 rounded-lg text-xs font-semibold transition-all active:scale-[0.98] cursor-pointer border
                     ${form.bias1H === bias.value
                       ? bias.value === 'bullish'
-                        ? 'bg-cyan-500/20 text-cyan-400 ring-1 ring-cyan-500/30'
-                        : 'bg-red-500/20 text-red-400 ring-1 ring-red-500/30'
-                      : 'bg-white/[0.03] text-muted-foreground hover:bg-white/[0.06]'
+                        ? 'bg-profit/15 text-profit border-profit/20'
+                        : 'bg-loss/15 text-loss border-loss/20'
+                      : 'bg-[#2c2c2e]/40 text-muted-foreground hover:bg-[#2c2c2e]/60 border-transparent'
                     }
                   `}
                 >
@@ -500,10 +500,10 @@ export default function TradeForm({ mode, initialDate, existingTrade }: TradeFor
               type="button"
               onClick={() => updateField('bias15M', bias.value)}
               className={`
-                py-2 rounded-xl text-sm font-semibold transition-all
+                py-1.5 rounded-lg text-xs font-semibold transition-all active:scale-[0.98] cursor-pointer border
                 ${form.bias15M === bias.value
-                  ? 'bg-white/10 text-foreground ring-1 ring-white/20'
-                  : 'bg-white/[0.03] text-muted-foreground hover:bg-white/[0.06]'
+                  ? 'bg-[#2c2c2e] text-white border-white/10'
+                  : 'bg-[#2c2c2e]/40 text-muted-foreground hover:bg-[#2c2c2e]/60 border-transparent'
                 }
               `}
             >
@@ -517,24 +517,24 @@ export default function TradeForm({ mode, initialDate, existingTrade }: TradeFor
           SMC Execution
           ================================================================ */}
       <Section title="Execution Checklist" defaultOpen={false}>
-        <div className="space-y-4">
+        <div className="space-y-3.5">
           {/* Inducement */}
-          <div className="flex items-center gap-3 p-3 rounded-xl bg-white/[0.02]">
+          <div className="flex items-center gap-3 p-3 rounded-lg bg-[#2c2c2e]/40 border border-white/5 shadow-sm">
             <Checkbox
               id="inducement"
               checked={form.inducementPresent}
               onCheckedChange={(checked) => updateField('inducementPresent', !!checked)}
             />
-            <Label htmlFor="inducement" className="text-sm font-medium cursor-pointer">
+            <Label htmlFor="inducement" className="text-xs font-medium cursor-pointer select-none text-foreground">
               Inducement Present
             </Label>
           </div>
 
           {/* POI Type */}
           <div>
-            <Label className="text-xs text-muted-foreground mb-1.5 block">POI Type</Label>
+            <Label className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/60 mb-1.5 block">POI Type</Label>
             <Select value={form.poiType} onValueChange={(v) => updateField('poiType', v)}>
-              <SelectTrigger className="bg-white/[0.03] border-white/10">
+              <SelectTrigger className="border-white/5 bg-[#2c2c2e]/40">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -547,9 +547,9 @@ export default function TradeForm({ mode, initialDate, existingTrade }: TradeFor
 
           {/* Entry Model */}
           <div>
-            <Label className="text-xs text-muted-foreground mb-1.5 block">Entry Model</Label>
+            <Label className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/60 mb-1.5 block">Entry Model</Label>
             <Select value={form.entryModel} onValueChange={(v) => updateField('entryModel', v)}>
-              <SelectTrigger className="bg-white/[0.03] border-white/10">
+              <SelectTrigger className="border-white/5 bg-[#2c2c2e]/40">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -566,20 +566,20 @@ export default function TradeForm({ mode, initialDate, existingTrade }: TradeFor
           Screenshots
           ================================================================ */}
       <Section title="Screenshots" defaultOpen={false}>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 gap-3.5">
           {/* Before Entry */}
           <div>
-            <Label className="text-xs text-muted-foreground mb-2 block">Before Entry</Label>
+            <Label className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/60 mb-2 block">Before Entry</Label>
             {beforeImages.map((img, i) => (
-              <div key={i} className="relative mb-2 rounded-lg overflow-hidden group">
-                <img src={img.preview} alt="Before entry" className="w-full h-24 object-cover rounded-lg" />
+              <div key={i} className="relative mb-2 rounded-lg overflow-hidden group border border-white/5 shadow-sm">
+                <img src={img.preview} alt="Before entry" className="w-full h-24 object-cover" />
                 <button
                   type="button"
                   onClick={() => removeImage(images.indexOf(img))}
-                  className="absolute -top-2 -right-2 p-2 w-10 h-10 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                  className="absolute -top-1.5 -right-1.5 p-1 w-8 h-8 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
                 >
-                  <div className="w-6 h-6 rounded-full bg-black/80 flex items-center justify-center">
-                    <X className="w-3.5 h-3.5 text-white" />
+                  <div className="w-5 h-5 rounded-full bg-black/85 flex items-center justify-center hover:bg-black/95">
+                    <X className="w-3 h-3 text-white" />
                   </div>
                 </button>
               </div>
@@ -587,26 +587,26 @@ export default function TradeForm({ mode, initialDate, existingTrade }: TradeFor
             <button
               type="button"
               onClick={() => handleImageUpload('before_entry')}
-              className="w-full py-4 rounded-xl border border-dashed border-white/10 flex flex-col items-center gap-1 text-muted-foreground hover:bg-white/[0.02] transition-colors"
+              className="w-full py-3 rounded-lg border border-dashed border-white/10 flex flex-col items-center gap-1 text-muted-foreground/60 hover:bg-white/5 hover:text-foreground transition-all cursor-pointer"
             >
-              <Upload className="w-4 h-4" />
-              <span className="text-[10px]">Upload</span>
+              <Upload className="w-3.5 h-3.5" />
+              <span className="text-[9px] font-semibold uppercase tracking-wider">Upload</span>
             </button>
           </div>
 
           {/* After Trade */}
           <div>
-            <Label className="text-xs text-muted-foreground mb-2 block">After Trade</Label>
+            <Label className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/60 mb-2 block">After Trade</Label>
             {afterImages.map((img, i) => (
-              <div key={i} className="relative mb-2 rounded-lg overflow-hidden group">
-                <img src={img.preview} alt="After trade" className="w-full h-24 object-cover rounded-lg" />
+              <div key={i} className="relative mb-2 rounded-lg overflow-hidden group border border-white/5 shadow-sm">
+                <img src={img.preview} alt="After trade" className="w-full h-24 object-cover" />
                 <button
                   type="button"
                   onClick={() => removeImage(images.indexOf(img))}
-                  className="absolute -top-2 -right-2 p-2 w-10 h-10 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                  className="absolute -top-1.5 -right-1.5 p-1 w-8 h-8 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
                 >
-                  <div className="w-6 h-6 rounded-full bg-black/80 flex items-center justify-center">
-                    <X className="w-3.5 h-3.5 text-white" />
+                  <div className="w-5 h-5 rounded-full bg-black/85 flex items-center justify-center hover:bg-black/95">
+                    <X className="w-3 h-3 text-white" />
                   </div>
                 </button>
               </div>
@@ -614,10 +614,10 @@ export default function TradeForm({ mode, initialDate, existingTrade }: TradeFor
             <button
               type="button"
               onClick={() => handleImageUpload('after_trade')}
-              className="w-full py-4 rounded-xl border border-dashed border-white/10 flex flex-col items-center gap-1 text-muted-foreground hover:bg-white/[0.02] transition-colors"
+              className="w-full py-3 rounded-lg border border-dashed border-white/10 flex flex-col items-center gap-1 text-muted-foreground/60 hover:bg-white/5 hover:text-foreground transition-all cursor-pointer"
             >
-              <Upload className="w-4 h-4" />
-              <span className="text-[10px]">Upload</span>
+              <Upload className="w-3.5 h-3.5" />
+              <span className="text-[9px] font-semibold uppercase tracking-wider">Upload</span>
             </button>
           </div>
         </div>
@@ -627,16 +627,16 @@ export default function TradeForm({ mode, initialDate, existingTrade }: TradeFor
           Trade Notes
           ================================================================ */}
       <Section title="Trade Notes" defaultOpen={false}>
-        <div className="space-y-3">
+        <div className="space-y-3.5">
           {NOTE_FIELDS.map((field) => (
             <div key={field.key}>
-              <Label className="text-xs text-muted-foreground mb-1.5 block">{field.label}</Label>
+              <Label className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/60 mb-1.5 block">{field.label}</Label>
               <Textarea
                 value={form[field.key as keyof FormData] as string}
                 onChange={(e) => updateField(field.key as keyof FormData, e.target.value)}
                 placeholder={field.placeholder}
                 rows={2}
-                className="bg-white/[0.03] border-white/10 resize-none text-sm min-h-[56px]"
+                className="resize-none"
               />
             </div>
           ))}
@@ -647,17 +647,17 @@ export default function TradeForm({ mode, initialDate, existingTrade }: TradeFor
           Save Button
           ================================================================ */}
       <motion.div
-        initial={{ opacity: 0, y: 10 }}
+        initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.3 }}
-        className="sticky bottom-[90px] lg:bottom-4 z-20 pt-2"
+        transition={{ delay: 0.2 }}
+        className="sticky bottom-[80px] lg:bottom-4 z-20 pt-2"
       >
         <button
           onClick={handleSave}
           disabled={saving}
-          className="w-full py-3.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-500 text-black font-bold text-sm flex items-center justify-center gap-2 hover:from-cyan-400 hover:to-blue-400 transition-all disabled:opacity-50 shadow-lg shadow-cyan-500/20"
+          className="w-full py-2.5 rounded-full bg-primary text-white font-semibold text-xs flex items-center justify-center gap-1.5 hover:opacity-90 transition-all active:scale-[0.98] disabled:opacity-50 shadow-md cursor-pointer border border-white/10"
         >
-          <Save className="w-4 h-4" />
+          <Save className="w-3.5 h-3.5" />
           {saving ? 'Saving...' : mode === 'edit' ? 'Update Trade' : 'Save Trade'}
         </button>
       </motion.div>

@@ -78,23 +78,23 @@ export default function HomePage() {
   return (
     <>
       {/* Header */}
-      <header className="sticky top-0 z-30 glass-nav px-4 lg:px-8 pt-safe pb-4">
+      <header className="sticky top-0 z-30 glass-nav px-4 lg:px-8 pt-safe pb-3.5">
         <div className="flex items-center justify-between max-w-6xl mx-auto">
           <div className="lg:hidden flex items-center gap-3">
-            <img src="/icons/icon-192.png" alt="SMC Journal Logo" className="w-8 h-8 rounded-xl shadow-lg shadow-cyan-500/20 ring-1 ring-white/10" />
-            <h1 className="text-lg font-bold tracking-tight">SMC Journal</h1>
+            <img src="/icons/icon-192.png" alt="SMC Journal Logo" className="w-7 h-7 rounded-lg border border-white/10 shadow-sm" />
+            <h1 className="text-sm font-semibold tracking-[-0.015em] text-foreground">SMC Journal</h1>
           </div>
           <div className="hidden lg:block">
-            <h1 className="text-lg font-semibold tracking-tight">Trading Calendar</h1>
-            <p className="text-xs text-muted-foreground">Track your daily performance</p>
+            <h1 className="text-base font-semibold tracking-[-0.015em] text-foreground">Trading Calendar</h1>
+            <p className="text-[11px] text-muted-foreground/80 mt-0.5">Track your daily performance</p>
           </div>
           <button
             onClick={() => setSearchOpen(true)}
-            className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm text-muted-foreground hover:text-foreground glass transition-all"
+            className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs text-muted-foreground hover:text-foreground bg-white/5 border border-white/5 transition-all cursor-pointer active:scale-98"
           >
-            <Search className="w-4 h-4" />
+            <Search className="w-3.5 h-3.5" />
             <span className="hidden sm:inline">Search...</span>
-            <kbd className="hidden lg:inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-mono bg-white/5 text-muted-foreground">
+            <kbd className="hidden lg:inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[9px] font-mono bg-white/10 text-muted-foreground">
               ⌘K
             </kbd>
           </button>
@@ -110,20 +110,20 @@ export default function HomePage() {
             transition={{ delay: 0.1 }}
             className="grid grid-cols-3 gap-3 mb-8"
           >
-            <div className="glass-card rounded-xl p-3 lg:p-4 text-center">
-              <p className="text-[10px] uppercase tracking-widest text-muted-foreground mb-1">Monthly P&L</p>
-              <p className={`text-lg lg:text-xl font-bold font-mono-num ${totalPnL >= 0 ? 'text-gradient-profit' : 'text-gradient-loss'}`}>
+            <div className="glass-card rounded-xl p-4 text-center shadow-sm">
+              <p className="text-[9px] uppercase tracking-wider text-muted-foreground/60 mb-1.5 font-medium">Monthly P&L</p>
+              <p className={`text-lg lg:text-xl font-bold font-mono-num ${totalPnL >= 0 ? 'text-profit' : 'text-loss'}`}>
                 {formatCurrency(totalPnL)}
               </p>
             </div>
-            <div className="glass-card rounded-xl p-3 lg:p-4 text-center">
-              <p className="text-[10px] uppercase tracking-widest text-muted-foreground mb-1">Win Rate</p>
+            <div className="glass-card rounded-xl p-4 text-center shadow-sm">
+              <p className="text-[9px] uppercase tracking-wider text-muted-foreground/60 mb-1.5 font-medium">Win Rate</p>
               <p className="text-lg lg:text-xl font-bold font-mono-num text-foreground">
                 {formatPercentage(winRate)}
               </p>
             </div>
-            <div className="glass-card rounded-xl p-3 lg:p-4 text-center">
-              <p className="text-[10px] uppercase tracking-widest text-muted-foreground mb-1">Trades</p>
+            <div className="glass-card rounded-xl p-4 text-center shadow-sm">
+              <p className="text-[9px] uppercase tracking-wider text-muted-foreground/60 mb-1.5 font-medium">Trades</p>
               <p className="text-lg lg:text-xl font-bold font-mono-num text-foreground">
                 {totalTrades}
               </p>

@@ -60,21 +60,21 @@ export default function SearchModal({ open, onOpenChange }: SearchModalProps) {
               >
                 <div className="flex items-center gap-3">
                   <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
-                    trade.profitLoss >= 0 ? 'bg-cyan-500/15' : 'bg-red-500/15'
+                    trade.profitLoss >= 0 ? 'bg-profit/10' : 'bg-loss/10'
                   }`}>
                     {trade.profitLoss >= 0 
-                      ? <TrendingUp className="w-4 h-4 text-cyan-400" />
-                      : <TrendingDown className="w-4 h-4 text-red-400" />
+                      ? <TrendingUp className="w-4 h-4 text-profit" />
+                      : <TrendingDown className="w-4 h-4 text-loss" />
                     }
                   </div>
                   <div>
-                    <p className="text-sm font-medium">{trade.asset}</p>
-                    <p className="text-xs text-muted-foreground">
+                    <p className="text-xs font-semibold text-foreground tracking-tight">{trade.asset}</p>
+                    <p className="text-[10px] text-muted-foreground/60 font-medium">
                       {trade.direction.toUpperCase()} • {SESSION_LABELS[trade.session]}
                     </p>
                   </div>
                 </div>
-                <span className={`text-sm font-mono-num font-semibold ${getPnLColor(trade.profitLoss)}`}>
+                <span className={`text-xs font-mono-num font-semibold ${getPnLColor(trade.profitLoss)}`}>
                   {formatCurrency(trade.profitLoss)}
                 </span>
               </CommandItem>

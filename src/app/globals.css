@@ -60,38 +60,46 @@
    Dark Theme (Default) — Trading Terminal Aesthetic
    ============================================================================ */
 :root {
-  --background: oklch(0.08 0.01 270);
-  --foreground: oklch(0.95 0 0);
-  --card: oklch(0.12 0.01 270);
-  --card-foreground: oklch(0.95 0 0);
-  --popover: oklch(0.13 0.01 270);
-  --popover-foreground: oklch(0.95 0 0);
-  --primary: oklch(0.75 0.15 200);
-  --primary-foreground: oklch(0.1 0 0);
-  --secondary: oklch(0.18 0.01 270);
-  --secondary-foreground: oklch(0.9 0 0);
-  --muted: oklch(0.18 0.01 270);
-  --muted-foreground: oklch(0.6 0 0);
-  --accent: oklch(0.18 0.02 270);
-  --accent-foreground: oklch(0.95 0 0);
-  --destructive: oklch(0.65 0.2 25);
-  --border: oklch(0.2 0.01 270);
-  --input: oklch(0.16 0.01 270);
-  --ring: oklch(0.75 0.15 200);
-  --chart-1: oklch(0.75 0.15 200);
-  --chart-2: oklch(0.7 0.15 280);
-  --chart-3: oklch(0.7 0.15 30);
-  --chart-4: oklch(0.65 0.15 150);
-  --chart-5: oklch(0.6 0.15 60);
-  --radius: 0.75rem;
-  --sidebar: oklch(0.1 0.01 270);
-  --sidebar-foreground: oklch(0.85 0 0);
-  --sidebar-primary: oklch(0.75 0.15 200);
-  --sidebar-primary-foreground: oklch(0.1 0 0);
-  --sidebar-accent: oklch(0.16 0.02 270);
-  --sidebar-accent-foreground: oklch(0.9 0 0);
-  --sidebar-border: oklch(0.2 0.01 270);
-  --sidebar-ring: oklch(0.75 0.15 200);
+  --background: #000000;
+  --foreground: #f5f5f7;
+  --card: #1c1c1e;
+  --card-foreground: #ffffff;
+  --popover: #2c2c2e;
+  --popover-foreground: #ffffff;
+  --primary: #2997ff;
+  --primary-foreground: #ffffff;
+  --secondary: #2c2c2e;
+  --secondary-foreground: #f5f5f7;
+  --muted: #1c1c1e;
+  --muted-foreground: #8e8e93;
+  --accent: #2c2c2e;
+  --accent-foreground: #ffffff;
+  --destructive: #ff453a;
+  --border: rgba(255, 255, 255, 0.08);
+  --input: #1c1c1e;
+  --ring: #0a84ff;
+  --chart-1: #2997ff;
+  --chart-2: #bf5af2;
+  --chart-3: #ff9f0a;
+  --chart-4: #30d158;
+  --chart-5: #ff453a;
+  --radius: 12px;
+  --sidebar: #161617;
+  --sidebar-foreground: #f5f5f7;
+  --sidebar-primary: #2997ff;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #2c2c2e;
+  --sidebar-accent-foreground: #ffffff;
+  --sidebar-border: rgba(255, 255, 255, 0.06);
+  --sidebar-ring: #0a84ff;
+
+  /* Custom Trading Terminal Colors (Apple Native System) */
+  --color-profit: #30d158;
+  --color-loss: #ff453a;
+  --color-neutral: #8e8e93;
+  --color-glass: rgba(22, 22, 23, 0.7);
+  --color-glass-border: rgba(255, 255, 255, 0.08);
+  --color-glass-hover: rgba(255, 255, 255, 0.12);
 }
 
 /* ============================================================================
@@ -140,71 +148,63 @@
    ============================================================================ */
 @layer utilities {
   .glass {
-    background: rgba(255, 255, 255, 0.03);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.06);
+    background: rgba(22, 22, 23, 0.7);
+    backdrop-filter: blur(20px) saturate(190%);
+    -webkit-backdrop-filter: blur(20px) saturate(190%);
+    border: 1px solid rgba(255, 255, 255, 0.08);
   }
 
   .glass-strong {
-    background: rgba(255, 255, 255, 0.06);
-    backdrop-filter: blur(40px);
-    -webkit-backdrop-filter: blur(40px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(28, 28, 30, 0.9);
+    backdrop-filter: blur(40px) saturate(200%);
+    -webkit-backdrop-filter: blur(40px) saturate(200%);
+    border: 1px solid rgba(255, 255, 255, 0.12);
   }
 
   .glass-card {
-    background: rgba(255, 255, 255, 0.03);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+    background: #1c1c1e;
     border: 1px solid rgba(255, 255, 255, 0.06);
-    transition: all 0.3s ease;
+    transition: all 0.2s cubic-bezier(0.25, 1, 0.5, 1);
   }
 
   .glass-card:hover {
-    background: rgba(255, 255, 255, 0.06);
+    background: #2c2c2e;
     border-color: rgba(255, 255, 255, 0.1);
-    transform: translateY(-1px);
+    transform: scale(1.005);
   }
 
   .glass-nav {
-    background: rgba(10, 10, 15, 0.8);
-    backdrop-filter: blur(40px) saturate(180%);
-    -webkit-backdrop-filter: blur(40px) saturate(180%);
-    border: 1px solid rgba(255, 255, 255, 0.06);
+    background: rgba(22, 22, 23, 0.75);
+    backdrop-filter: blur(20px) saturate(190%);
+    -webkit-backdrop-filter: blur(20px) saturate(190%);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   }
 
-  /* Glow effects */
+  /* Glow effects (Muted & Premium) */
   .glow-profit {
-    box-shadow: 0 0 20px rgba(0, 212, 255, 0.15);
+    box-shadow: 0 0 25px rgba(48, 209, 88, 0.08);
   }
 
   .glow-loss {
-    box-shadow: 0 0 20px rgba(255, 71, 87, 0.15);
+    box-shadow: 0 0 25px rgba(255, 69, 58, 0.08);
   }
 
   .glow-primary {
-    box-shadow: 0 0 30px rgba(0, 212, 255, 0.2);
+    box-shadow: 0 0 30px rgba(41, 151, 255, 0.1);
   }
 
-  /* Text gradients */
+  /* Text gradients (Apple style solid or micro-gradient) */
   .text-gradient-profit {
-    background: linear-gradient(135deg, #00d4ff, #00ffd5);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: #30d158;
   }
 
   .text-gradient-loss {
-    background: linear-gradient(135deg, #ff4757, #ff6b81);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: #ff453a;
   }
 
   /* Mono numbers */
   .font-mono-num {
-    font-family: 'JetBrains Mono', monospace;
+    font-family: var(--font-mono), monospace;
     font-variant-numeric: tabular-nums;
   }
 
@@ -214,20 +214,20 @@
   }
 
   .pt-safe {
-    padding-top: calc(env(safe-area-inset-top) + 1.5rem);
+    padding-top: calc(env(safe-area-inset-top) + 1rem);
   }
 
-  /* Accent border left (for trade cards) */
+  /* Accent border left (for trade cards - iOS style) */
   .border-l-profit {
-    border-left: 3px solid #00d4ff;
+    border-left: 4px solid #30d158;
   }
 
   .border-l-loss {
-    border-left: 3px solid #ff4757;
+    border-left: 4px solid #ff453a;
   }
 
   .border-l-neutral {
-    border-left: 3px solid #64748b;
+    border-left: 4px solid #8e8e93;
   }
 }
 

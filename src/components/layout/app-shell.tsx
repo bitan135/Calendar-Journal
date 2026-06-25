@@ -31,13 +31,13 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex min-h-[100dvh] w-full">
       {/* Desktop Sidebar */}
-      <aside className="hidden lg:flex flex-col w-[240px] fixed top-0 left-0 h-full z-40 glass-nav">
+      <aside className="hidden lg:flex flex-col w-[240px] fixed top-0 left-0 h-full z-40 bg-[#161617] border-r border-white/5">
         {/* Logo */}
         <div className="flex items-center gap-3 px-6 py-6 border-b border-white/5">
-          <img src="/icons/icon-192.png" alt="SMC Journal Logo" className="w-9 h-9 rounded-[10px] shadow-lg shadow-cyan-500/20 ring-1 ring-white/10" />
+          <img src="/icons/icon-192.png" alt="SMC Journal Logo" className="w-8 h-8 rounded-lg border border-white/10 shadow-sm" />
           <div>
-            <h1 className="font-bold text-sm tracking-tight">SMC Journal</h1>
-            <p className="text-[10px] text-muted-foreground tracking-wide uppercase">Trading Terminal</p>
+            <h1 className="font-semibold text-sm tracking-tight text-foreground">SMC Journal</h1>
+            <p className="text-[10px] text-muted-foreground/60 tracking-wider uppercase font-medium">Trading Terminal</p>
           </div>
         </div>
 
@@ -51,22 +51,15 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
                 key={item.href}
                 href={item.href}
                 className={`
-                  group relative flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium
-                  transition-all duration-200
+                  group relative flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium
+                  transition-all duration-150
                   ${isActive
-                    ? 'text-cyan-400 bg-cyan-500/10'
+                    ? 'text-white bg-primary shadow-sm'
                     : 'text-muted-foreground hover:text-foreground hover:bg-white/5'
                   }
                 `}
               >
-                {isActive && (
-                  <motion.div
-                    layoutId="sidebar-active"
-                    className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 bg-cyan-400 rounded-r-full"
-                    transition={{ type: 'spring', stiffness: 350, damping: 30 }}
-                  />
-                )}
-                <item.icon className="w-[18px] h-[18px]" />
+                <item.icon className="w-[18px] h-[18px] shrink-0" />
                 <span>{item.label}</span>
               </Link>
             );
@@ -75,7 +68,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
 
         {/* Bottom info */}
         <div className="px-6 py-4 border-t border-white/5">
-          <p className="text-[10px] text-muted-foreground/50">v1.0.0 • Local Only</p>
+          <p className="text-[10px] text-muted-foreground/40 font-mono">v1.0.0 • Local Only</p>
         </div>
       </aside>
 
@@ -96,8 +89,8 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
       </main>
 
       {/* Mobile Bottom Nav */}
-      <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-50 glass-nav pb-safe">
-        <div className="flex items-center justify-around px-2 py-2">
+      <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-50 glass-nav pb-safe border-t border-white/5">
+        <div className="flex items-center justify-around px-2 py-1.5">
           {NAV_ITEMS.map((item) => {
             const isActive = pathname === item.href ||
               (item.href !== '/' && pathname.startsWith(item.href));
@@ -106,23 +99,16 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
                 key={item.href}
                 href={item.href}
                 className={`
-                  relative flex flex-col items-center gap-1 py-1.5 px-4 rounded-xl
-                  transition-all duration-200 min-w-[64px]
+                  relative flex flex-col items-center gap-0.5 py-1 px-4 rounded-xl
+                  transition-all duration-150 min-w-[64px]
                   ${isActive
-                    ? 'text-cyan-400'
-                    : 'text-muted-foreground'
+                    ? 'text-primary'
+                    : 'text-muted-foreground hover:text-foreground'
                   }
                 `}
               >
-                {isActive && (
-                  <motion.div
-                    layoutId="mobile-nav-active"
-                    className="absolute -top-1 left-1/2 -translate-x-1/2 w-6 h-[2px] bg-cyan-400 rounded-full"
-                    transition={{ type: 'spring', stiffness: 350, damping: 30 }}
-                  />
-                )}
                 <item.icon className="w-5 h-5" />
-                <span className="text-[10px] font-medium">{item.label}</span>
+                <span className="text-[9px] font-medium">{item.label}</span>
               </Link>
             );
           })}
