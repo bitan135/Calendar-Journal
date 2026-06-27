@@ -2,8 +2,9 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { Download, Upload, HardDrive, Info, Keyboard, Database, Shield } from 'lucide-react';
+import { Download, Upload, HardDrive, Info, Keyboard, Database, Shield, Sun, Moon, Monitor, Palette } from 'lucide-react';
 import { toast } from 'sonner';
+import { useTheme } from 'next-themes';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import PageHeader from '@/components/layout/page-header';
@@ -12,6 +13,20 @@ import { getStorageEstimate } from '@/lib/db/database';
 import { getTradeCount } from '@/lib/db/trades';
 import { APP_CONFIG, KEYBOARD_SHORTCUTS } from '@/lib/utils/constants';
 
+// ============================================================================
+// Theme Options
+// ============================================================================
+
+const THEME_OPTIONS = [
+  { value: 'dark', label: 'Dark', icon: Moon, description: 'Trading terminal aesthetic' },
+  { value: 'light', label: 'Light', icon: Sun, description: 'Clean, bright interface' },
+  { value: 'system', label: 'System', icon: Monitor, description: 'Follow device settings' },
+] as const;
+
+// ============================================================================
+// Settings Page
+// ============================================================================
+
 export default function SettingsPage() {
   const [exporting, setExporting] = useState(false);
   const [importing, setImporting] = useState(false);
@@ -19,11 +34,17 @@ export default function SettingsPage() {
   const [pendingFile, setPendingFile] = useState<File | null>(null);
   const [storage, setStorage] = useState<{ usage: number; quota: number } | null>(null);
   const [tradeCount, setTradeCount] = useState(0);
+  const [mounted, setMounted] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { theme, setTheme } = useTheme();
 
   useEffect(() => {
-    getStorageEstimate().then(setStorage);
-    getTradeCount().then(setTradeCount);
+    const timer = setTimeout(() => {
+      setMounted(true);
+      getStorageEstimate().then(setStorage);
+      getTradeCount().then(setTradeCount);
+    }, 0);
+    return () => clearTimeout(timer);
   }, []);
 
   const handleExport = async () => {
@@ -63,7 +84,7 @@ export default function SettingsPage() {
       getStorageEstimate().then(setStorage);
     } catch (error) {
       console.error('Import error:', error);
-      toast.error('Failed to import backup. Check the file format.');
+      toast.error(error instanceof Error ? error.message : 'Failed to import backup. Check the file format.');
     }
     setImporting(false);
     setPendingFile(null);
@@ -84,11 +105,54 @@ export default function SettingsPage() {
       <PageHeader title="Settings" subtitle="Manage your journal" />
 
       <div className="px-4 lg:px-8 py-6 max-w-2xl mx-auto space-y-4">
+        {/* Appearance */}
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="glass-card rounded-xl p-5 border border-border shadow-sm"
+        >
+          <div className="flex items-center gap-2 mb-3.5">
+            <Palette className="w-4 h-4 text-primary" />
+            <h3 className="text-sm font-semibold tracking-tight text-foreground">Appearance</h3>
+          </div>
+
+          <p className="text-xs text-muted-foreground/80 leading-relaxed mb-4">
+            Choose your preferred theme. Changes are applied instantly.
+          </p>
+
+          <div className="grid grid-cols-3 gap-2">
+            {THEME_OPTIONS.map((option) => {
+              const isActive = mounted && theme === option.value;
+              return (
+                <button
+                  key={option.value}
+                  onClick={() => setTheme(option.value)}
+                  className={`
+                    flex flex-col items-center gap-2 py-3 px-2 rounded-lg text-xs font-semibold
+                    transition-all active:scale-[0.98] cursor-pointer border
+                    ${isActive
+                      ? 'bg-primary/10 text-primary border-primary/20'
+                      : 'bg-secondary text-muted-foreground hover:bg-accent border-transparent'
+                    }
+                  `}
+                >
+                  <option.icon className={`w-5 h-5 ${isActive ? 'text-primary' : 'text-muted-foreground'}`} />
+                  <span>{option.label}</span>
+                  <span className="text-[9px] font-normal text-muted-foreground/60 leading-tight text-center">
+                    {option.description}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </motion.div>
+
         {/* Backup & Restore */}
         <motion.div
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
-          className="glass-card rounded-xl p-5 border border-white/5 shadow-sm"
+          transition={{ delay: 0.05 }}
+          className="glass-card rounded-xl p-5 border border-border shadow-sm"
         >
           <div className="flex items-center gap-2 mb-3.5">
             <Database className="w-4 h-4 text-primary" />
@@ -103,7 +167,7 @@ export default function SettingsPage() {
             <button
               onClick={handleExport}
               disabled={exporting}
-              className="flex items-center justify-center gap-1.5 py-2.5 rounded-lg bg-primary text-white font-semibold text-xs hover:opacity-90 active:scale-95 transition-all disabled:opacity-50 cursor-pointer shadow-sm"
+              className="flex items-center justify-center gap-1.5 py-2.5 rounded-lg bg-primary text-primary-foreground font-semibold text-xs hover:opacity-90 active:scale-95 transition-all disabled:opacity-50 cursor-pointer shadow-sm"
             >
               <Download className="w-3.5 h-3.5" />
               {exporting ? 'Exporting...' : 'Export Backup'}
@@ -111,7 +175,7 @@ export default function SettingsPage() {
             <button
               onClick={handleImportClick}
               disabled={importing}
-              className="flex items-center justify-center gap-1.5 py-2.5 rounded-lg bg-white/5 border border-white/5 text-foreground font-semibold text-xs hover:bg-white/10 active:scale-95 transition-all disabled:opacity-50 cursor-pointer"
+              className="flex items-center justify-center gap-1.5 py-2.5 rounded-lg bg-secondary border border-border text-foreground font-semibold text-xs hover:bg-accent active:scale-95 transition-all disabled:opacity-50 cursor-pointer"
             >
               <Upload className="w-3.5 h-3.5" />
               {importing ? 'Importing...' : 'Import Backup'}
@@ -130,8 +194,8 @@ export default function SettingsPage() {
         <motion.div
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.05 }}
-          className="glass-card rounded-xl p-5 border border-white/5 shadow-sm"
+          transition={{ delay: 0.1 }}
+          className="glass-card rounded-xl p-5 border border-border shadow-sm"
         >
           <div className="flex items-center gap-2 mb-3.5">
             <HardDrive className="w-4 h-4 text-primary" />
@@ -139,21 +203,21 @@ export default function SettingsPage() {
           </div>
 
           <div className="space-y-3.5">
-            <div className="flex items-center justify-between text-xs py-1.5 border-b border-white/5">
+            <div className="flex items-center justify-between text-xs py-1.5 border-b border-border">
               <span className="text-muted-foreground/80 font-medium">Total Trades</span>
               <span className="font-semibold font-mono-num">{tradeCount}</span>
             </div>
             {storage && (
               <>
-                <div className="flex items-center justify-between text-xs py-1.5 border-b border-white/5">
+                <div className="flex items-center justify-between text-xs py-1.5 border-b border-border">
                   <span className="text-muted-foreground/80 font-medium">Used Storage</span>
                   <span className="font-semibold font-mono-num">{formatBytes(storage.usage)}</span>
                 </div>
-                <div className="flex items-center justify-between text-xs py-1.5 border-b border-white/5 last:border-0">
+                <div className="flex items-center justify-between text-xs py-1.5 border-b border-border last:border-0">
                   <span className="text-muted-foreground/80 font-medium">Available</span>
                   <span className="font-semibold font-mono-num">{formatBytes(storage.quota)}</span>
                 </div>
-                <div className="w-full bg-white/5 rounded-full h-1.5 mt-2.5">
+                <div className="w-full bg-secondary rounded-full h-1.5 mt-2.5">
                   <div
                     className="h-1.5 rounded-full bg-primary transition-all"
                     style={{ width: `${Math.min(storagePercent, 100)}%` }}
@@ -169,8 +233,8 @@ export default function SettingsPage() {
         <motion.div
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="glass-card rounded-xl p-5 border border-white/5 shadow-sm"
+          transition={{ delay: 0.15 }}
+          className="glass-card rounded-xl p-5 border border-border shadow-sm"
         >
           <div className="flex items-center gap-2 mb-3.5">
             <Keyboard className="w-4 h-4 text-primary" />
@@ -179,9 +243,9 @@ export default function SettingsPage() {
 
           <div className="space-y-1.5">
             {KEYBOARD_SHORTCUTS.map((shortcut) => (
-              <div key={shortcut.key} className="flex items-center justify-between py-1.5 border-b border-white/5 last:border-0 text-xs">
+              <div key={shortcut.key} className="flex items-center justify-between py-1.5 border-b border-border last:border-0 text-xs">
                 <span className="text-muted-foreground/80 font-medium">{shortcut.description}</span>
-                <kbd className="px-2 py-0.5 rounded bg-white/5 border border-white/5 text-[10px] font-mono text-foreground/90 font-semibold">
+                <kbd className="px-2 py-0.5 rounded bg-secondary border border-border text-[10px] font-mono text-foreground/90 font-semibold">
                   {shortcut.key}
                 </kbd>
               </div>
@@ -193,8 +257,8 @@ export default function SettingsPage() {
         <motion.div
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.15 }}
-          className="glass-card rounded-xl p-5 border border-white/5 shadow-sm"
+          transition={{ delay: 0.2 }}
+          className="glass-card rounded-xl p-5 border border-border shadow-sm"
         >
           <div className="flex items-center gap-2 mb-3.5">
             <Info className="w-4 h-4 text-primary" />
@@ -202,18 +266,18 @@ export default function SettingsPage() {
           </div>
 
           <div className="space-y-2.5 text-xs">
-            <div className="flex items-center justify-between py-1 border-b border-white/5">
+            <div className="flex items-center justify-between py-1 border-b border-border">
               <span className="text-muted-foreground/80 font-medium">Version</span>
               <span className="font-semibold font-mono-num">{APP_CONFIG.version}</span>
             </div>
-            <div className="flex items-center justify-between py-1 border-b border-white/5">
+            <div className="flex items-center justify-between py-1 border-b border-border">
               <span className="text-muted-foreground/80 font-medium">Storage</span>
               <div className="flex items-center gap-1 font-semibold text-profit">
                 <Shield className="w-3.5 h-3.5" />
                 <span>Local Only</span>
               </div>
             </div>
-            <div className="flex items-center justify-between py-1 border-b border-white/5 last:border-0">
+            <div className="flex items-center justify-between py-1 border-b border-border last:border-0">
               <span className="text-muted-foreground/80 font-medium">Data Privacy</span>
               <span className="font-semibold text-profit">100% Private</span>
             </div>
@@ -232,7 +296,7 @@ export default function SettingsPage() {
           </DialogHeader>
           <DialogFooter>
             <Button variant="ghost" onClick={() => { setImportConfirm(false); setPendingFile(null); }}>Cancel</Button>
-            <Button onClick={handleImportConfirm} className="bg-primary text-white hover:opacity-90 transition-all border border-white/10">
+            <Button onClick={handleImportConfirm} className="bg-primary text-primary-foreground hover:opacity-90 transition-all border border-border">
               Import
             </Button>
           </DialogFooter>

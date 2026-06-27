@@ -7,10 +7,21 @@ import { TradeImage, ImageType } from '@/lib/types';
 import { APP_CONFIG } from '@/lib/utils/constants';
 
 // ============================================================================
+// Constants
+// ============================================================================
+
+const MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024; // 10 MB
+
+// ============================================================================
 // Compress Image
 // ============================================================================
 
 async function compressImage(file: File): Promise<Blob> {
+  // Validate file size before processing
+  if (file.size > MAX_FILE_SIZE_BYTES) {
+    throw new Error(`Image file is too large (${(file.size / 1024 / 1024).toFixed(1)} MB). Maximum allowed size is 10 MB.`);
+  }
+
   return new Promise((resolve, reject) => {
     const img = new Image();
     const url = URL.createObjectURL(file);
@@ -18,41 +29,45 @@ async function compressImage(file: File): Promise<Blob> {
     img.onload = () => {
       URL.revokeObjectURL(url);
 
-      let { width, height } = img;
-      const maxWidth = APP_CONFIG.maxImageWidth;
+      try {
+        let { width, height } = img;
+        const maxWidth = APP_CONFIG.maxImageWidth;
 
-      if (width > maxWidth) {
-        height = Math.round((height * maxWidth) / width);
-        width = maxWidth;
+        if (width > maxWidth) {
+          height = Math.round((height * maxWidth) / width);
+          width = maxWidth;
+        }
+
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+
+        const ctx = canvas.getContext('2d');
+        if (!ctx) {
+          reject(new Error('Could not get canvas context'));
+          return;
+        }
+
+        ctx.drawImage(img, 0, 0, width, height);
+        canvas.toBlob(
+          (blob) => {
+            if (blob) {
+              resolve(blob);
+            } else {
+              reject(new Error('Could not compress image'));
+            }
+          },
+          'image/jpeg',
+          APP_CONFIG.imageQuality
+        );
+      } catch (error) {
+        reject(new Error(`Image processing failed: ${error instanceof Error ? error.message : 'Unknown error'}`));
       }
-
-      const canvas = document.createElement('canvas');
-      canvas.width = width;
-      canvas.height = height;
-
-      const ctx = canvas.getContext('2d');
-      if (!ctx) {
-        reject(new Error('Could not get canvas context'));
-        return;
-      }
-
-      ctx.drawImage(img, 0, 0, width, height);
-      canvas.toBlob(
-        (blob) => {
-          if (blob) {
-            resolve(blob);
-          } else {
-            reject(new Error('Could not compress image'));
-          }
-        },
-        'image/jpeg',
-        APP_CONFIG.imageQuality
-      );
     };
 
     img.onerror = () => {
       URL.revokeObjectURL(url);
-      reject(new Error('Could not load image'));
+      reject(new Error('Could not load image. The file may be corrupted or in an unsupported format.'));
     };
 
     img.src = url;

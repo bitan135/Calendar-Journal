@@ -1,9 +1,9 @@
 'use client';
 
-import { use, useState, useEffect } from 'react';
+import { use, useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { Edit, Trash2, Copy, TrendingUp, TrendingDown, ChevronRight, X, ImageIcon } from 'lucide-react';
+import { Edit, Trash2, Copy, X, ImageIcon } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import PageHeader from '@/components/layout/page-header';
@@ -11,9 +11,16 @@ import { useTrade } from '@/lib/hooks/use-trades';
 import { deleteTrade, duplicateTrade } from '@/lib/db/trades';
 import { getImagesByTradeId, getImageUrl } from '@/lib/db/images';
 import { TradeImage } from '@/lib/types';
-import { formatCurrency, formatDateFull, formatTime, formatRR, getPnLColor } from '@/lib/utils/formatters';
+import { formatCurrency, formatDateFull, formatTime, formatRR } from '@/lib/utils/formatters';
 import { SESSION_LABELS, ENTRY_MODEL_LABELS, NOTE_FIELDS } from '@/lib/utils/constants';
 import { toast } from 'sonner';
+
+const InfoRow = ({ label, value, mono = false }: { label: string; value: string; mono?: boolean }) => (
+  <div className="flex items-center justify-between py-2.5 border-b border-border last:border-0 text-xs">
+    <span className="text-muted-foreground/70 font-medium">{label}</span>
+    <span className={`font-semibold text-foreground ${mono ? 'font-mono-num' : ''}`}>{value}</span>
+  </div>
+);
 
 export default function TradeDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -23,15 +30,26 @@ export default function TradeDetailPage({ params }: { params: Promise<{ id: stri
   const [images, setImages] = useState<(TradeImage & { url: string })[]>([]);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [viewerImage, setViewerImage] = useState<string | null>(null);
+  const imageUrlsRef = useRef<string[]>([]);
 
   useEffect(() => {
     if (tradeId) {
       getImagesByTradeId(tradeId).then((imgs) => {
-        setImages(imgs.map((img) => ({ ...img, url: getImageUrl(img) })));
+        // Revoke any previous URLs before creating new ones
+        imageUrlsRef.current.forEach((url) => URL.revokeObjectURL(url));
+        
+        const mapped = imgs.map((img) => {
+          const url = getImageUrl(img);
+          return { ...img, url };
+        });
+        imageUrlsRef.current = mapped.map((m) => m.url);
+        setImages(mapped);
       });
     }
     return () => {
-      images.forEach((img) => URL.revokeObjectURL(img.url));
+      // Cleanup: revoke all object URLs on unmount
+      imageUrlsRef.current.forEach((url) => URL.revokeObjectURL(url));
+      imageUrlsRef.current = [];
     };
   }, [tradeId]);
 
@@ -65,15 +83,9 @@ export default function TradeDetailPage({ params }: { params: Promise<{ id: stri
     }
   };
 
-  const InfoRow = ({ label, value, mono = false }: { label: string; value: string; mono?: boolean }) => (
-    <div className="flex items-center justify-between py-2.5 border-b border-white/5 last:border-0 text-xs">
-      <span className="text-muted-foreground/70 font-medium">{label}</span>
-      <span className={`font-semibold text-foreground ${mono ? 'font-mono-num' : ''}`}>{value}</span>
-    </div>
-  );
 
-  const beforeImages = images.filter((img) => img.type === 'before_entry');
-  const afterImages = images.filter((img) => img.type === 'after_trade');
+
+
 
   return (
     <>
@@ -115,7 +127,7 @@ export default function TradeDetailPage({ params }: { params: Promise<{ id: stri
           initial={{ opacity: 0, scale: 0.98 }}
           animate={{ opacity: 1, scale: 1 }}
           className={`
-            glass-card rounded-xl p-6 text-center border border-white/5 shadow-sm
+            glass-card rounded-xl p-6 text-center border border-border shadow-sm
             ${trade.profitLoss > 0 ? 'glow-profit' : trade.profitLoss < 0 ? 'glow-loss' : ''}
           `}
         >
@@ -133,7 +145,7 @@ export default function TradeDetailPage({ params }: { params: Promise<{ id: stri
         </motion.div>
 
         {/* Basic Info */}
-        <div className="glass-card rounded-xl p-4 border border-white/5 shadow-sm">
+        <div className="glass-card rounded-xl p-4 border border-border shadow-sm">
           <h3 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/60 mb-2.5">Details</h3>
           <InfoRow label="Asset" value={trade.asset} />
           <InfoRow label="Direction" value={trade.direction.toUpperCase()} />
@@ -144,7 +156,7 @@ export default function TradeDetailPage({ params }: { params: Promise<{ id: stri
         </div>
 
         {/* Risk Management */}
-        <div className="glass-card rounded-xl p-4 border border-white/5 shadow-sm">
+        <div className="glass-card rounded-xl p-4 border border-border shadow-sm">
           <h3 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/60 mb-2.5">Risk Management</h3>
           <InfoRow label="Lot Size" value={trade.lotSize.toString()} mono />
           <InfoRow label="Entry Price" value={trade.entryPrice.toString()} mono />
@@ -154,7 +166,7 @@ export default function TradeDetailPage({ params }: { params: Promise<{ id: stri
         </div>
 
         {/* Analysis */}
-        <div className="glass-card rounded-xl p-4 border border-white/5 shadow-sm">
+        <div className="glass-card rounded-xl p-4 border border-border shadow-sm">
           <h3 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/60 mb-2.5">Analysis</h3>
           <InfoRow label="4H Bias" value={trade.bias4H?.charAt(0).toUpperCase() + trade.bias4H?.slice(1)} />
           <InfoRow label="1H Bias" value={trade.bias1H?.charAt(0).toUpperCase() + trade.bias1H?.slice(1)} />
@@ -165,14 +177,14 @@ export default function TradeDetailPage({ params }: { params: Promise<{ id: stri
 
         {/* Screenshots */}
         {images.length > 0 && (
-          <div className="glass-card rounded-xl p-4 border border-white/5 shadow-sm">
+          <div className="glass-card rounded-xl p-4 border border-border shadow-sm">
             <h3 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/60 mb-3">Screenshots</h3>
             <div className="grid grid-cols-2 gap-3.5">
               {images.map((img) => (
                 <button
                   key={img.id}
                   onClick={() => setViewerImage(img.url)}
-                  className="relative rounded-lg overflow-hidden group cursor-pointer border border-white/5 hover:border-white/15 transition-all shadow-sm"
+                  className="relative rounded-lg overflow-hidden group cursor-pointer border border-border hover:border-border/80 transition-all shadow-sm"
                 >
                   <img src={img.url} alt={img.type} className="w-full h-32 object-cover" />
                   <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
@@ -188,16 +200,16 @@ export default function TradeDetailPage({ params }: { params: Promise<{ id: stri
         )}
 
         {/* Notes */}
-        {NOTE_FIELDS.some((f) => (trade as any)[f.key]?.trim()) && (
-          <div className="glass-card rounded-xl p-4 space-y-4 border border-white/5 shadow-sm">
+        {NOTE_FIELDS.some((f) => (trade as unknown as Record<string, string>)[f.key]?.trim()) && (
+          <div className="glass-card rounded-xl p-4 space-y-4 border border-border shadow-sm">
             <h3 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/60 mb-2.5">Notes</h3>
             {NOTE_FIELDS.map((field) => {
-              const value = (trade as any)[field.key];
+              const value = (trade as unknown as Record<string, string>)[field.key];
               if (!value?.trim()) return null;
               return (
                 <div key={field.key} className="space-y-1">
                   <p className="text-[9px] font-semibold uppercase tracking-wider text-muted-foreground/50">{field.label}</p>
-                  <div className="bg-[#2c2c2e]/40 border border-white/5 rounded-lg p-3 text-xs text-foreground/90 leading-relaxed">
+                  <div className="bg-secondary/40 border border-border rounded-lg p-3 text-xs text-foreground/90 leading-relaxed">
                     {value}
                   </div>
                 </div>
@@ -222,7 +234,7 @@ export default function TradeDetailPage({ params }: { params: Promise<{ id: stri
           >
             <X className="w-4 h-4 text-white" />
           </button>
-          <img src={viewerImage} alt="Screenshot" className="max-w-full max-h-full object-contain rounded-lg shadow-2xl border border-white/5 animate-float" />
+          <img src={viewerImage} alt="Screenshot" className="max-w-full max-h-full object-contain rounded-lg shadow-2xl border border-border animate-float" />
         </motion.div>
       )}
 

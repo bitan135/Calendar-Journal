@@ -1,13 +1,13 @@
 'use client';
 
-import { use } from 'react';
+import { use, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { Plus, TrendingUp, TrendingDown, Target, BarChart2, Award, AlertTriangle } from 'lucide-react';
+import { Plus, TrendingUp, TrendingDown, Target, BarChart2, Award } from 'lucide-react';
 import PageHeader from '@/components/layout/page-header';
 import { useTradesByDate } from '@/lib/hooks/use-trades';
 import { generateDaySummary } from '@/lib/utils/calculations';
-import { formatDateFull, formatCurrency, formatPercentage, formatRR, formatTime, isDateToday, getPnLColor, getPnLBgColor } from '@/lib/utils/formatters';
+import { formatDateFull, formatCurrency, formatPercentage, formatRR, formatTime, isDateToday, getPnLColor } from '@/lib/utils/formatters';
 import { SESSION_LABELS, ENTRY_MODEL_LABELS } from '@/lib/utils/constants';
 
 // ============================================================================
@@ -20,16 +20,16 @@ export default function DayPage({ params }: { params: Promise<{ date: string }> 
   const { trades, loading } = useTradesByDate(date);
   const today = isDateToday(date);
 
-  const summary = generateDaySummary(date, trades);
+  const summary = useMemo(() => generateDaySummary(date, trades), [date, trades]);
 
-  const stats = [
+  const stats = useMemo(() => [
     { label: 'Daily P&L', value: formatCurrency(summary.totalPnL), icon: TrendingUp, color: getPnLColor(summary.totalPnL) },
     { label: 'Trades', value: String(summary.tradeCount), icon: BarChart2, color: 'text-foreground' },
     { label: 'Win Rate', value: formatPercentage(summary.winRate), icon: Target, color: 'text-foreground' },
     { label: 'Avg RR', value: formatRR(summary.avgRR), icon: Award, color: 'text-foreground' },
     { label: 'Best Trade', value: formatCurrency(summary.bestTrade), icon: TrendingUp, color: 'text-profit' },
     { label: 'Worst Trade', value: formatCurrency(summary.worstTrade), icon: TrendingDown, color: 'text-loss' },
-  ];
+  ], [summary]);
 
   if (loading) {
     return (
@@ -44,14 +44,14 @@ export default function DayPage({ params }: { params: Promise<{ date: string }> 
           {/* Skeleton Stats Grid */}
           <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
             {[1, 2, 3, 4, 5, 6].map((i) => (
-              <div key={i} className="bg-white/[0.02] border border-white/5 rounded-xl p-4 h-20 animate-shimmer" />
+              <div key={i} className="bg-card border border-border rounded-xl p-4 h-20 animate-shimmer" />
             ))}
           </div>
           {/* Skeleton Trades List */}
           <div className="space-y-3">
-            <div className="h-4 w-24 bg-white/5 rounded animate-shimmer mb-4" />
+            <div className="h-4 w-24 bg-muted rounded animate-shimmer mb-4" />
             {[1, 2].map((i) => (
-              <div key={i} className="bg-white/[0.02] border border-white/5 rounded-xl p-4 h-24 animate-shimmer" />
+              <div key={i} className="bg-card border border-border rounded-xl p-4 h-24 animate-shimmer" />
             ))}
           </div>
         </div>
@@ -91,7 +91,7 @@ export default function DayPage({ params }: { params: Promise<{ date: string }> 
                 initial={{ opacity: 0, scale: 0.98 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: index * 0.03, duration: 0.15 }}
-                className="glass-card rounded-xl p-4 border border-white/5 shadow-sm"
+                className="bg-card rounded-xl p-4 border border-border shadow-sm"
               >
                 <div className="flex items-center gap-2 mb-2">
                   <stat.icon className="w-3.5 h-3.5 text-muted-foreground/60" />
@@ -121,12 +121,12 @@ export default function DayPage({ params }: { params: Promise<{ date: string }> 
                 transition={{ delay: index * 0.03 }}
                 onClick={() => router.push(`/trade/${trade.id}`)}
                 className={`
-                  glass-card rounded-xl p-4 cursor-pointer hover:bg-[#2c2c2e] transition-all border border-white/5 shadow-sm
+                  bg-card rounded-xl p-4 cursor-pointer hover:bg-accent transition-all border border-border shadow-sm
                   ${trade.profitLoss > 0
-                    ? 'border-l-profit'
+                    ? 'border-l-4 border-l-profit'
                     : trade.profitLoss < 0
-                      ? 'border-l-loss'
-                      : 'border-l-neutral'
+                      ? 'border-l-4 border-l-loss'
+                      : 'border-l-4 border-l-neutral'
                   }
                 `}
               >
@@ -153,7 +153,7 @@ export default function DayPage({ params }: { params: Promise<{ date: string }> 
                 <div className="flex items-center gap-4 text-xs text-muted-foreground/60 font-medium">
                   <span>{formatTime(trade.entryTime)} → {formatTime(trade.exitTime)}</span>
                   <span>RR {formatRR(trade.rrRatio)}</span>
-                  <span className="text-[9px] px-1.5 py-0.5 rounded bg-white/5 border border-white/5 font-mono">
+                  <span className="text-[9px] px-1.5 py-0.5 rounded bg-muted border border-border font-mono">
                     {ENTRY_MODEL_LABELS[trade.entryModel]}
                   </span>
                 </div>
@@ -167,7 +167,7 @@ export default function DayPage({ params }: { params: Promise<{ date: string }> 
             transition={{ delay: 0.1 }}
             className="flex flex-col items-center justify-center py-20 text-center"
           >
-            <div className="w-12 h-12 rounded-xl bg-white/5 border border-white/5 flex items-center justify-center mb-4">
+            <div className="w-12 h-12 rounded-xl bg-muted border border-border flex items-center justify-center mb-4">
               <BarChart2 className="w-6 h-6 text-muted-foreground/40" />
             </div>
             <h3 className="text-sm font-semibold text-muted-foreground mb-1">No trades recorded</h3>
@@ -194,7 +194,7 @@ export default function DayPage({ params }: { params: Promise<{ date: string }> 
           animate={{ scale: 1, opacity: 1 }}
           transition={{ type: 'spring', stiffness: 200, damping: 15 }}
           onClick={() => router.push(`/trade/new?date=${date}`)}
-          className="fixed bottom-20 lg:bottom-6 right-6 z-40 flex items-center gap-1.5 px-4 py-2.5 rounded-full bg-primary text-white font-semibold text-xs shadow-md hover:opacity-95 transition-all cursor-pointer active:scale-95 border border-white/10"
+          className="fixed bottom-20 lg:bottom-6 right-6 z-40 flex items-center gap-1.5 px-4 py-2.5 rounded-full bg-primary text-primary-foreground font-semibold text-xs shadow-md hover:opacity-95 transition-all cursor-pointer active:scale-95 border border-border"
           aria-label="Log Trade"
         >
           <Plus className="w-4 h-4" />

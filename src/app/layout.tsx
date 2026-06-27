@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import { Inter, JetBrains_Mono } from 'next/font/google';
+import { ThemeProvider } from 'next-themes';
 import { Toaster } from '@/components/ui/sonner';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import AppShell from '@/components/layout/app-shell';
@@ -36,13 +37,19 @@ export const metadata: Metadata = {
     title: 'SMC Journal',
   },
   icons: {
-    icon: '/icons/icon-192.png',
+    icon: [
+      { url: '/icons/icon-192.png', sizes: '192x192', type: 'image/png' },
+      { url: '/icons/icon-512.png', sizes: '512x512', type: 'image/png' },
+    ],
     apple: '/icons/icon-192.png',
   },
 };
 
 export const viewport: Viewport = {
-  themeColor: '#0a0a0f',
+  themeColor: [
+    { media: '(prefers-color-scheme: dark)', color: '#000000' },
+    { media: '(prefers-color-scheme: light)', color: '#f8f9fa' },
+  ],
   width: 'device-width',
   initialScale: 1,
   maximumScale: 1,
@@ -62,21 +69,27 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${jetbrainsMono.variable} dark`}
+      className={`${inter.variable} ${jetbrainsMono.variable}`}
       suppressHydrationWarning
     >
       <body suppressHydrationWarning className="min-h-[100dvh] bg-background text-foreground antialiased">
-        <TooltipProvider>
-          <AppShell>{children}</AppShell>
-          <Toaster
-            position="top-right"
-            richColors
-            theme="dark"
-            toastOptions={{
-              className: 'glass-strong',
-            }}
-          />
-        </TooltipProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="dark"
+          enableSystem
+          disableTransitionOnChange={false}
+        >
+          <TooltipProvider>
+            <AppShell>{children}</AppShell>
+            <Toaster
+              position="top-right"
+              richColors
+              toastOptions={{
+                className: 'glass-strong',
+              }}
+            />
+          </TooltipProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

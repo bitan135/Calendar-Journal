@@ -6,6 +6,7 @@ import { db } from './database';
 import { BackupData, Trade, TradeImage } from '@/lib/types';
 import { APP_CONFIG } from '@/lib/utils/constants';
 import { blobToBase64, base64ToBlob } from './images';
+import { validateBackupStructure } from '@/lib/utils/validation';
 
 // ============================================================================
 // Export
@@ -57,64 +58,77 @@ export async function exportBackup(): Promise<void> {
 }
 
 // ============================================================================
-// Import
+// Import (Transactional — rolls back on failure to prevent data loss)
 // ============================================================================
 
 export async function importBackup(file: File): Promise<{ trades: number; images: number }> {
   const text = await file.text();
-  const backup: BackupData = JSON.parse(text);
 
-  // Validate structure
-  if (!backup.version || !backup.trades || !Array.isArray(backup.trades)) {
-    throw new Error('Invalid backup file format');
+  let backup: BackupData;
+  try {
+    backup = JSON.parse(text);
+  } catch {
+    throw new Error('Invalid JSON file. Please select a valid backup file.');
   }
 
-  // Clear existing data
-  await db.trades.clear();
-  await db.images.clear();
+  // Validate backup structure before proceeding
+  const validation = validateBackupStructure(backup);
+  if (!validation.valid) {
+    throw new Error(`Invalid backup format: ${validation.errors.join(', ')}`);
+  }
 
-  // Import trades
-  let tradeCount = 0;
-  const idMap = new Map<number, number>(); // old ID → new ID
+  // Wrap the entire import in a transaction so that if anything fails,
+  // the original data is preserved (rollback on error)
+  const result = await db.transaction('rw', [db.trades, db.images, db.settings], async () => {
+    // Clear existing data (inside transaction — rolls back if import fails)
+    await db.trades.clear();
+    await db.images.clear();
 
-  for (const trade of backup.trades) {
-    const oldId = trade.id;
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { id, ...tradeData } = trade;
-    const newId = await db.trades.add(tradeData as unknown as Trade);
-    if (oldId !== undefined) {
-      idMap.set(oldId, newId as number);
+    // Import trades
+    let tradeCount = 0;
+    const idMap = new Map<number, number>(); // old ID → new ID
+
+    for (const trade of backup.trades) {
+      const oldId = trade.id;
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { id, ...tradeData } = trade;
+      const newId = await db.trades.add(tradeData as unknown as Trade);
+      if (oldId !== undefined) {
+        idMap.set(oldId, newId as number);
+      }
+      tradeCount++;
     }
-    tradeCount++;
-  }
 
-  // Import images
-  let imageCount = 0;
-  if (backup.images && Array.isArray(backup.images)) {
-    for (const img of backup.images) {
-      try {
-        const blob = await base64ToBlob(img.dataUrl);
-        const newTradeId = idMap.get(img.tradeId) || img.tradeId;
+    // Import images
+    let imageCount = 0;
+    if (backup.images && Array.isArray(backup.images)) {
+      for (const img of backup.images) {
+        try {
+          const blob = await base64ToBlob(img.dataUrl);
+          const newTradeId = idMap.get(img.tradeId) || img.tradeId;
 
-        await db.images.add({
-          tradeId: newTradeId,
-          type: img.type,
-          blob,
-          filename: img.filename,
-          mimeType: img.mimeType,
-          createdAt: new Date().toISOString(),
-        } as unknown as TradeImage);
-        imageCount++;
-      } catch (e) {
-        console.warn(`[SMC Journal] Skipping image: ${img.filename}`, e);
+          await db.images.add({
+            tradeId: newTradeId,
+            type: img.type,
+            blob,
+            filename: img.filename,
+            mimeType: img.mimeType,
+            createdAt: new Date().toISOString(),
+          } as unknown as TradeImage);
+          imageCount++;
+        } catch (e) {
+          console.warn(`[SMC Journal] Skipping image: ${img.filename}`, e);
+        }
       }
     }
-  }
 
-  // Import settings
-  if (backup.settings) {
-    await db.settings.put(backup.settings);
-  }
+    // Import settings
+    if (backup.settings) {
+      await db.settings.put(backup.settings);
+    }
 
-  return { trades: tradeCount, images: imageCount };
+    return { trades: tradeCount, images: imageCount };
+  });
+
+  return result;
 }

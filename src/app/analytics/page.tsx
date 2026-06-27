@@ -4,10 +4,10 @@ import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import {
   AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
-  ResponsiveContainer, Cell, PieChart, Pie
+  ResponsiveContainer, Cell
 } from 'recharts';
 import {
-  TrendingUp, TrendingDown, Target, Award, BarChart2, AlertTriangle,
+  TrendingUp, Target, Award, BarChart2, AlertTriangle,
   Filter, X
 } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -24,13 +24,23 @@ import { format } from 'date-fns';
 // Custom Tooltip
 // ============================================================================
 
-function ChartTooltip({ active, payload, label }: any) {
+interface TooltipEntry {
+  value: number;
+}
+
+interface ChartTooltipProps {
+  active?: boolean;
+  payload?: TooltipEntry[];
+  label?: string;
+}
+
+function ChartTooltip({ active, payload, label }: ChartTooltipProps) {
   if (!active || !payload?.length) return null;
   return (
     <div className="glass-strong rounded-lg px-3 py-2 text-xs shadow-xl">
       <p className="text-muted-foreground mb-1">{label}</p>
-      {payload.map((entry: any, i: number) => (
-        <p key={i} className={`font-mono-num font-semibold ${entry.value >= 0 ? 'text-cyan-400' : 'text-red-400'}`}>
+      {payload.map((entry, i) => (
+        <p key={i} className={`font-mono-num font-semibold ${entry.value >= 0 ? 'text-primary' : 'text-loss'}`}>
           {formatCurrency(entry.value)}
         </p>
       ))}
@@ -51,7 +61,7 @@ function StatCard({
 }: {
   label: string;
   value: string;
-  icon: any;
+  icon: React.ComponentType<{ className?: string }>;
   color?: string;
   delay?: number;
 }) {
@@ -78,7 +88,7 @@ function StatCard({
 export default function AnalyticsPage() {
   const [filters, setFilters] = useState<Partial<FilterState>>({});
   const [showFilters, setShowFilters] = useState(false);
-  const { trades, loading } = useAllTrades(filters);
+  const { trades } = useAllTrades(filters);
   const analytics = useAnalytics(trades);
 
   const hasActiveFilters = Object.values(filters).some((v) => v);
@@ -118,7 +128,7 @@ export default function AnalyticsPage() {
           <button
             onClick={() => setShowFilters(!showFilters)}
             className={`flex items-center gap-2 px-3 py-2 rounded-xl text-sm transition-all ${
-              hasActiveFilters ? 'bg-cyan-500/15 text-cyan-400' : 'glass text-muted-foreground hover:text-foreground'
+              hasActiveFilters ? 'bg-primary/15 text-primary' : 'glass text-muted-foreground hover:text-foreground'
             }`}
           >
             <Filter className="w-4 h-4" />
@@ -139,14 +149,14 @@ export default function AnalyticsPage() {
             <div className="flex items-center justify-between mb-3">
               <h3 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Filters</h3>
               {hasActiveFilters && (
-                <button onClick={clearFilters} className="text-xs text-cyan-400 hover:text-cyan-300 flex items-center gap-1">
+                <button onClick={clearFilters} className="text-xs text-primary hover:opacity-80 flex items-center gap-1">
                   <X className="w-3 h-3" /> Clear All
                 </button>
               )}
             </div>
             <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
               <Select value={filters.asset || ''} onValueChange={(v) => updateFilter('asset', v)}>
-                <SelectTrigger className="bg-white/[0.03] border-white/10 text-xs">
+                <SelectTrigger className="bg-secondary border-border text-xs">
                   <SelectValue placeholder="Asset" />
                 </SelectTrigger>
                 <SelectContent>
@@ -155,7 +165,7 @@ export default function AnalyticsPage() {
                 </SelectContent>
               </Select>
               <Select value={filters.session || ''} onValueChange={(v) => updateFilter('session', v)}>
-                <SelectTrigger className="bg-white/[0.03] border-white/10 text-xs">
+                <SelectTrigger className="bg-secondary border-border text-xs">
                   <SelectValue placeholder="Session" />
                 </SelectTrigger>
                 <SelectContent>
@@ -164,7 +174,7 @@ export default function AnalyticsPage() {
                 </SelectContent>
               </Select>
               <Select value={filters.entryModel || ''} onValueChange={(v) => updateFilter('entryModel', v)}>
-                <SelectTrigger className="bg-white/[0.03] border-white/10 text-xs">
+                <SelectTrigger className="bg-secondary border-border text-xs">
                   <SelectValue placeholder="Entry Model" />
                 </SelectTrigger>
                 <SelectContent>
@@ -173,7 +183,7 @@ export default function AnalyticsPage() {
                 </SelectContent>
               </Select>
               <Select value={filters.outcome || ''} onValueChange={(v) => updateFilter('outcome', v)}>
-                <SelectTrigger className="bg-white/[0.03] border-white/10 text-xs">
+                <SelectTrigger className="bg-secondary border-border text-xs">
                   <SelectValue placeholder="Outcome" />
                 </SelectTrigger>
                 <SelectContent>
@@ -188,7 +198,7 @@ export default function AnalyticsPage() {
                 value={filters.dateFrom || ''}
                 onChange={(e) => updateFilter('dateFrom', e.target.value)}
                 placeholder="From date"
-                className="bg-white/[0.03] border-white/10 text-xs [color-scheme:dark]"
+                className="bg-secondary border-border text-xs"
               />
             </div>
           </motion.div>
@@ -204,7 +214,7 @@ export default function AnalyticsPage() {
 
         {analytics.totalTrades === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 text-center">
-            <div className="w-16 h-16 rounded-2xl bg-white/5 flex items-center justify-center mb-4">
+            <div className="w-16 h-16 rounded-2xl bg-muted flex items-center justify-center mb-4">
               <BarChart2 className="w-8 h-8 text-muted-foreground/40" />
             </div>
             <h3 className="text-lg font-semibold text-muted-foreground mb-2">No data yet</h3>
@@ -281,9 +291,9 @@ export default function AnalyticsPage() {
                       <span>{session.trades} trades</span>
                       <span>{formatPercentage(session.winRate)} win rate</span>
                     </div>
-                    <div className="w-full bg-white/5 rounded-full h-1.5">
+                    <div className="w-full bg-secondary rounded-full h-1.5">
                       <div
-                        className={`h-1.5 rounded-full transition-all ${session.pnl >= 0 ? 'bg-cyan-500' : 'bg-red-500'}`}
+                        className={`h-1.5 rounded-full transition-all ${session.pnl >= 0 ? 'bg-primary' : 'bg-loss'}`}
                         style={{ width: `${Math.min(session.winRate, 100)}%` }}
                       />
                     </div>
@@ -302,7 +312,7 @@ export default function AnalyticsPage() {
               <h3 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-4">Asset Performance</h3>
               <div className="space-y-3">
                 {analytics.assetPerformance.slice(0, 8).map((asset) => (
-                  <div key={asset.asset} className="flex items-center justify-between py-1.5 border-b border-white/5 last:border-0">
+                  <div key={asset.asset} className="flex items-center justify-between py-1.5 border-b border-border last:border-0">
                     <div>
                       <span className="text-sm font-medium">{asset.asset}</span>
                       <div className="flex items-center gap-2 text-[10px] text-muted-foreground mt-0.5">
@@ -332,7 +342,7 @@ export default function AnalyticsPage() {
                 </h3>
                 <div className="space-y-2">
                   {analytics.mistakePatterns.slice(0, 5).map((pattern) => (
-                    <div key={pattern.mistake} className="flex items-center justify-between py-2 border-b border-white/5 last:border-0">
+                    <div key={pattern.mistake} className="flex items-center justify-between py-2 border-b border-border last:border-0">
                       <span className="text-sm text-foreground/80 capitalize">{pattern.mistake}</span>
                       <span className="text-xs font-mono-num bg-amber-500/15 text-amber-400 px-2 py-0.5 rounded-md">
                         {pattern.count}×

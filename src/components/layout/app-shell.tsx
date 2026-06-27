@@ -8,7 +8,6 @@ import {
   CalendarDays,
   BarChart3,
   Settings,
-  Search,
 } from 'lucide-react';
 
 // ============================================================================
@@ -31,10 +30,10 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex min-h-[100dvh] w-full">
       {/* Desktop Sidebar */}
-      <aside className="hidden lg:flex flex-col w-[240px] fixed top-0 left-0 h-full z-40 bg-[#161617] border-r border-white/5">
+      <aside className="hidden lg:flex flex-col w-[240px] fixed top-0 left-0 h-full z-40 bg-sidebar border-r border-sidebar-border">
         {/* Logo */}
-        <div className="flex items-center gap-3 px-6 py-6 border-b border-white/5">
-          <img src="/icons/icon-192.png" alt="SMC Journal Logo" className="w-8 h-8 rounded-lg border border-white/10 shadow-sm" />
+        <div className="flex items-center gap-3 px-6 py-6 border-b border-sidebar-border">
+          <img src="/icons/icon-192.png" alt="SMC Journal Logo" className="w-8 h-8 rounded-lg border border-border shadow-sm" />
           <div>
             <h1 className="font-semibold text-sm tracking-tight text-foreground">SMC Journal</h1>
             <p className="text-[10px] text-muted-foreground/60 tracking-wider uppercase font-medium">Trading Terminal</p>
@@ -54,8 +53,8 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
                   group relative flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium
                   transition-all duration-150
                   ${isActive
-                    ? 'text-white bg-primary shadow-sm'
-                    : 'text-muted-foreground hover:text-foreground hover:bg-white/5'
+                    ? 'text-primary-foreground bg-primary shadow-sm'
+                    : 'text-muted-foreground hover:text-foreground hover:bg-accent'
                   }
                 `}
               >
@@ -67,7 +66,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         </nav>
 
         {/* Bottom info */}
-        <div className="px-6 py-4 border-t border-white/5">
+        <div className="px-6 py-4 border-t border-sidebar-border">
           <p className="text-[10px] text-muted-foreground/40 font-mono">v1.0.0 • Local Only</p>
         </div>
       </aside>
@@ -89,7 +88,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
       </main>
 
       {/* Mobile Bottom Nav */}
-      <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-50 glass-nav pb-safe border-t border-white/5">
+      <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-50 glass-nav pb-safe border-t border-border">
         <div className="flex items-center justify-around px-2 py-1.5">
           {NAV_ITEMS.map((item) => {
             const isActive = pathname === item.href ||

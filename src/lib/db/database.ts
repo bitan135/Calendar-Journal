@@ -32,15 +32,30 @@ class SMCJournalDB extends Dexie {
 export const db = new SMCJournalDB();
 
 // ============================================================================
+// Global Error Handler
+// ============================================================================
+
+if (typeof window !== 'undefined') {
+  window.addEventListener('unhandledrejection', (event) => {
+    if (event.reason && (event.reason.name?.includes('Dexie') || event.reason.stack?.includes('dexie'))) {
+      console.error('[SMC Journal] Unhandled Dexie database error:', event.reason);
+    }
+  });
+}
+
+// ============================================================================
 // Request Persistent Storage
 // ============================================================================
 
 export async function requestPersistentStorage(): Promise<boolean> {
   if (typeof window === 'undefined') return false;
-  if (navigator.storage && navigator.storage.persist) {
-    const isPersisted = await navigator.storage.persist();
-    console.log(`[SMC Journal] Persistent storage: ${isPersisted ? 'granted' : 'denied'}`);
-    return isPersisted;
+  try {
+    if (navigator.storage && navigator.storage.persist) {
+      const isPersisted = await navigator.storage.persist();
+      return isPersisted;
+    }
+  } catch (error) {
+    console.error('[SMC Journal] Failed to request persistent storage:', error);
   }
   return false;
 }
@@ -51,12 +66,29 @@ export async function requestPersistentStorage(): Promise<boolean> {
 
 export async function getStorageEstimate(): Promise<{ usage: number; quota: number } | null> {
   if (typeof window === 'undefined') return null;
-  if (navigator.storage && navigator.storage.estimate) {
-    const estimate = await navigator.storage.estimate();
-    return {
-      usage: estimate.usage || 0,
-      quota: estimate.quota || 0,
-    };
+  try {
+    if (navigator.storage && navigator.storage.estimate) {
+      const estimate = await navigator.storage.estimate();
+      return {
+        usage: estimate.usage || 0,
+        quota: estimate.quota || 0,
+      };
+    }
+  } catch (error) {
+    console.error('[SMC Journal] Failed to get storage estimate:', error);
   }
   return null;
+}
+
+// ============================================================================
+// Database Health Check
+// ============================================================================
+
+export async function isDatabaseHealthy(): Promise<boolean> {
+  try {
+    await db.trades.count();
+    return true;
+  } catch {
+    return false;
+  }
 }

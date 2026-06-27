@@ -1,8 +1,8 @@
 'use client';
 
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { Search, TrendingUp, TrendingDown, BarChart2 } from 'lucide-react';
+import { Search } from 'lucide-react';
 import TradingCalendar from '@/components/calendar/trading-calendar';
 import SearchModal from '@/components/shared/search-modal';
 import { useTradesByMonth } from '@/lib/hooks/use-trades';
@@ -16,12 +16,38 @@ export default function HomePage() {
   const [month, setMonth] = useState(today.getMonth());
   const [searchOpen, setSearchOpen] = useState(false);
 
-  const { trades, loading } = useTradesByMonth(year, month);
+  const { trades } = useTradesByMonth(year, month);
 
   // Request persistent storage on first load
   useEffect(() => {
     requestPersistentStorage();
   }, []);
+
+  const handlePrevMonth = () => {
+    setMonth((prev) => {
+      if (prev === 0) {
+        setYear((y) => y - 1);
+        return 11;
+      }
+      return prev - 1;
+    });
+  };
+
+  const handleNextMonth = () => {
+    setMonth((prev) => {
+      if (prev === 11) {
+        setYear((y) => y + 1);
+        return 0;
+      }
+      return prev + 1;
+    });
+  };
+
+  const handleGoToday = () => {
+    const now = new Date();
+    setYear(now.getFullYear());
+    setMonth(now.getMonth());
+  };
 
   // Keyboard shortcuts
   useEffect(() => {
@@ -42,37 +68,11 @@ export default function HomePage() {
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [searchOpen, month, year]);
+  });
 
-  const handlePrevMonth = useCallback(() => {
-    setMonth((prev) => {
-      if (prev === 0) {
-        setYear((y) => y - 1);
-        return 11;
-      }
-      return prev - 1;
-    });
-  }, []);
-
-  const handleNextMonth = useCallback(() => {
-    setMonth((prev) => {
-      if (prev === 11) {
-        setYear((y) => y + 1);
-        return 0;
-      }
-      return prev + 1;
-    });
-  }, []);
-
-  const handleGoToday = useCallback(() => {
-    const now = new Date();
-    setYear(now.getFullYear());
-    setMonth(now.getMonth());
-  }, []);
-
-  // Monthly stats
-  const totalPnL = calculateTotalPnL(trades);
-  const winRate = calculateWinRate(trades);
+  // Monthly stats — memoized to avoid recalculating on every render
+  const totalPnL = useMemo(() => calculateTotalPnL(trades), [trades]);
+  const winRate = useMemo(() => calculateWinRate(trades), [trades]);
   const totalTrades = trades.length;
 
   return (
@@ -81,7 +81,7 @@ export default function HomePage() {
       <header className="sticky top-0 z-30 glass-nav px-4 lg:px-8 pt-safe pb-3.5">
         <div className="flex items-center justify-between max-w-6xl mx-auto">
           <div className="lg:hidden flex items-center gap-3">
-            <img src="/icons/icon-192.png" alt="SMC Journal Logo" className="w-7 h-7 rounded-lg border border-white/10 shadow-sm" />
+            <img src="/icons/icon-192.png" alt="SMC Journal Logo" className="w-7 h-7 rounded-lg border border-border shadow-sm" />
             <h1 className="text-sm font-semibold tracking-[-0.015em] text-foreground">SMC Journal</h1>
           </div>
           <div className="hidden lg:block">
@@ -90,11 +90,11 @@ export default function HomePage() {
           </div>
           <button
             onClick={() => setSearchOpen(true)}
-            className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs text-muted-foreground hover:text-foreground bg-white/5 border border-white/5 transition-all cursor-pointer active:scale-98"
+            className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs text-muted-foreground hover:text-foreground bg-accent border border-border transition-all cursor-pointer active:scale-98"
           >
             <Search className="w-3.5 h-3.5" />
             <span className="hidden sm:inline">Search...</span>
-            <kbd className="hidden lg:inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[9px] font-mono bg-white/10 text-muted-foreground">
+            <kbd className="hidden lg:inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[9px] font-mono bg-muted text-muted-foreground">
               ⌘K
             </kbd>
           </button>

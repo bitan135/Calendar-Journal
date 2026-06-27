@@ -5,6 +5,7 @@
 import { db } from './database';
 import { Trade } from '@/lib/types';
 import { deriveOutcome } from '@/lib/utils/calculations';
+import { validateTradeData } from '@/lib/utils/validation';
 import { deleteImagesByTradeId } from './images';
 
 // ============================================================================
@@ -14,6 +15,12 @@ import { deleteImagesByTradeId } from './images';
 export async function addTrade(
   trade: Omit<Trade, 'id' | 'outcome' | 'createdAt' | 'updatedAt'>
 ): Promise<number> {
+  // Validate trade data before saving
+  const validation = validateTradeData(trade);
+  if (!validation.valid) {
+    throw new Error(`Invalid trade data: ${validation.errors.join(', ')}`);
+  }
+
   const now = new Date().toISOString();
   const outcome = deriveOutcome(trade.profitLoss);
 
@@ -82,17 +89,21 @@ export async function updateTrade(
     updateData.outcome = deriveOutcome(updates.profitLoss);
   }
 
-  await db.trades.update(id, updateData);
+  const count = await db.trades.update(id, updateData);
+  if (count === 0) {
+    throw new Error(`Trade with id ${id} not found`);
+  }
 }
 
 // ============================================================================
-// Delete
+// Delete (Atomic — transaction ensures images + trade are deleted together)
 // ============================================================================
 
 export async function deleteTrade(id: number): Promise<void> {
-  // Cascade delete images
-  await deleteImagesByTradeId(id);
-  await db.trades.delete(id);
+  await db.transaction('rw', [db.trades, db.images], async () => {
+    await deleteImagesByTradeId(id);
+    await db.trades.delete(id);
+  });
 }
 
 // ============================================================================
@@ -116,14 +127,27 @@ export async function duplicateTrade(id: number): Promise<number | null> {
 }
 
 // ============================================================================
-// Search
+// Search (Optimized — uses Dexie filter to avoid full materialization)
 // ============================================================================
 
-export function searchTrades(query: string) {
+export async function searchTrades(query: string) {
   const lowerQuery = query.toLowerCase();
-  
-  return db.trades.toArray().then((allTrades) => {
-    return allTrades.filter((trade) => {
+
+  // Fast path: if query looks like an asset symbol, use the index
+  if (/^[A-Za-z0-9]{2,10}$/.test(query)) {
+    const indexResults = await db.trades
+      .where('asset')
+      .startsWithIgnoreCase(query.toUpperCase())
+      .toArray();
+
+    if (indexResults.length > 0) {
+      return indexResults;
+    }
+  }
+
+  // Full-text search across all text fields
+  return db.trades
+    .filter((trade) => {
       return (
         trade.asset.toLowerCase().includes(lowerQuery) ||
         trade.tradeReasoning?.toLowerCase().includes(lowerQuery) ||
@@ -134,8 +158,8 @@ export function searchTrades(query: string) {
         trade.importantNote?.toLowerCase().includes(lowerQuery) ||
         trade.date.includes(query)
       );
-    });
-  });
+    })
+    .toArray();
 }
 
 // ============================================================================

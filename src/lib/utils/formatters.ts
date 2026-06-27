@@ -122,5 +122,5 @@ export function getPnLColor(value: number): string {
 export function getPnLBgColor(value: number): string {
   if (value > 0) return 'bg-profit/10 text-profit';
   if (value < 0) return 'bg-loss/10 text-loss';
-  return 'bg-[#2c2c2e] text-muted-foreground';
+  return 'bg-secondary text-muted-foreground';
 }

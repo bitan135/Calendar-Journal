@@ -2,12 +2,12 @@
 
 import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronLeft, ChevronRight, Dot } from 'lucide-react';
-import { format, startOfMonth, endOfMonth, startOfWeek, endOfWeek, addDays, isSameMonth, isToday, isSameDay } from 'date-fns';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { format, startOfMonth, endOfMonth, startOfWeek, endOfWeek, addDays, isSameMonth, isToday } from 'date-fns';
 import { useRouter } from 'next/navigation';
 import { Trade, DaySummary } from '@/lib/types';
 import { generateDaySummary } from '@/lib/utils/calculations';
-import { formatCompactCurrency, getPnLColor } from '@/lib/utils/formatters';
+import { formatCompactCurrency } from '@/lib/utils/formatters';
 
 // ============================================================================
 // Types
@@ -92,7 +92,7 @@ export default function TradingCalendar({
       <div className="flex items-center justify-between mb-6 px-1">
         <button
           onClick={handlePrev}
-          className="flex items-center justify-center w-8 h-8 rounded-lg hover:bg-white/5 transition-all active:scale-90 cursor-pointer"
+          className="flex items-center justify-center w-8 h-8 rounded-lg hover:bg-accent transition-all active:scale-90 cursor-pointer"
           aria-label="Previous month"
         >
           <ChevronLeft className="w-4 h-4 text-muted-foreground hover:text-foreground" />
@@ -118,7 +118,7 @@ export default function TradingCalendar({
 
         <button
           onClick={handleNext}
-          className="flex items-center justify-center w-8 h-8 rounded-lg hover:bg-white/5 transition-all active:scale-90 cursor-pointer"
+          className="flex items-center justify-center w-8 h-8 rounded-lg hover:bg-accent transition-all active:scale-90 cursor-pointer"
           aria-label="Next month"
         >
           <ChevronRight className="w-4 h-4 text-muted-foreground hover:text-foreground" />
@@ -137,7 +137,7 @@ export default function TradingCalendar({
         ))}
       </div>
 
-      {/* Calendar Grid */}
+      {/* Calendar Grid — single fade-in instead of per-cell stagger */}
       <AnimatePresence mode="wait">
         <motion.div
           key={`${year}-${month}`}
@@ -147,7 +147,7 @@ export default function TradingCalendar({
           transition={{ duration: 0.2, ease: 'easeInOut' }}
           className="grid grid-cols-7 gap-1"
         >
-          {calendarDays.map((date, index) => {
+          {calendarDays.map((date) => {
             const dateStr = format(date, 'yyyy-MM-dd');
             const summary = daySummaries.get(dateStr);
             const inMonth = isSameMonth(date, new Date(year, month));
@@ -156,11 +156,8 @@ export default function TradingCalendar({
             const pnl = summary?.totalPnL || 0;
 
             return (
-              <motion.button
+              <button
                 key={dateStr}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: index * 0.003, duration: 0.15 }}
                 onClick={() => handleDayClick(date)}
                 className={`
                   relative flex flex-col items-center justify-start gap-1
@@ -168,7 +165,7 @@ export default function TradingCalendar({
                   transition-all duration-150 group border border-transparent
                   ${inMonth ? 'text-foreground' : 'text-muted-foreground/20'}
                   ${today ? 'bg-primary/5 border-primary/20' : ''}
-                  ${hasTrades ? 'bg-[#1c1c1e] hover:bg-[#2c2c2e] border-white/5 cursor-pointer shadow-sm' : 'hover:bg-white/[0.02] cursor-pointer'}
+                  ${hasTrades ? 'glass-card cursor-pointer shadow-sm' : 'hover:bg-accent/30 cursor-pointer'}
                 `}
                 aria-label={`${format(date, 'MMMM d, yyyy')}${hasTrades ? `, ${summary!.tradeCount} trades, P&L ${pnl}` : ''}`}
               >
@@ -176,7 +173,7 @@ export default function TradingCalendar({
                 <div
                   className={`
                     w-6 h-6 flex items-center justify-center text-xs font-semibold rounded-full
-                    ${today ? 'bg-primary text-white font-bold shadow-sm' : ''}
+                    ${today ? 'bg-primary text-primary-foreground font-bold shadow-sm' : ''}
                   `}
                 >
                   {format(date, 'd')}
@@ -217,7 +214,7 @@ export default function TradingCalendar({
                     )}
                   </div>
                 )}
-              </motion.button>
+              </button>
             );
           })}
         </motion.div>
@@ -234,7 +231,7 @@ export default function TradingCalendar({
           <span>Losing</span>
         </div>
         <div className="flex items-center gap-1.5">
-          <div className="w-2 h-2 rounded-[3px] bg-[#1c1c1e] border border-white/10" />
+          <div className="w-2 h-2 rounded-[3px] bg-card border border-border" />
           <span>No Trades</span>
         </div>
       </div>

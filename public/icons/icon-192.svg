@@ -1,23 +1,24 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="192" height="192" viewBox="0 0 192 192">
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#0a0a1a"/>
-      <stop offset="100%" stop-color="#12122a"/>
-    </linearGradient>
-    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#00d4ff"/>
-      <stop offset="100%" stop-color="#0088ff"/>
+      <stop offset="0%" stop-color="#2d3436"/>
+      <stop offset="100%" stop-color="#353b3c"/>
     </linearGradient>
   </defs>
   <rect width="192" height="192" rx="40" fill="url(#bg)"/>
-  <rect x="36" y="52" width="120" height="100" rx="12" fill="none" stroke="url(#accent)" stroke-width="3" opacity="0.6"/>
-  <rect x="36" y="52" width="120" height="28" rx="12" fill="url(#accent)" opacity="0.2"/>
-  <circle cx="58" cy="66" r="4" fill="#00d4ff"/>
-  <circle cx="74" cy="66" r="4" fill="#00d4ff" opacity="0.6"/>
-  <circle cx="90" cy="66" r="4" fill="#00d4ff" opacity="0.3"/>
-  <line x1="52" y1="100" x2="72" y2="110" stroke="#ff4757" stroke-width="2.5" stroke-linecap="round"/>
-  <line x1="72" y1="110" x2="92" y2="95" stroke="#00d4ff" stroke-width="2.5" stroke-linecap="round"/>
-  <line x1="92" y1="95" x2="112" y2="105" stroke="#ff4757" stroke-width="2.5" stroke-linecap="round"/>
-  <line x1="112" y1="105" x2="140" y2="88" stroke="#00d4ff" stroke-width="2.5" stroke-linecap="round"/>
-  <text x="96" y="140" text-anchor="middle" fill="#ffffff" font-family="system-ui" font-size="14" font-weight="700" opacity="0.9">SMC</text>
+  <!-- Open book -->
+  <path d="M40 130 Q96 115 96 115 Q96 115 152 130 L152 135 Q96 120 96 120 Q96 120 40 135 Z" fill="#ffffff" opacity="0.95"/>
+  <path d="M38 128 Q96 112 96 112 Q96 112 154 128 L154 133 Q96 117 96 117 Q96 117 38 133 Z" fill="#ffffff" opacity="0.85"/>
+  <!-- Candlestick 1 -->
+  <line x1="68" y1="55" x2="68" y2="105" stroke="#4a9e8e" stroke-width="2.5" stroke-linecap="round"/>
+  <rect x="62" y="65" width="12" height="25" rx="2" fill="#4a9e8e"/>
+  <!-- Candlestick 2 -->
+  <line x1="96" y1="50" x2="96" y2="100" stroke="#4a9e8e" stroke-width="2.5" stroke-linecap="round"/>
+  <rect x="90" y="60" width="12" height="20" rx="2" fill="#4a9e8e"/>
+  <!-- Candlestick 3 -->
+  <line x1="124" y1="45" x2="124" y2="95" stroke="#4a9e8e" stroke-width="2.5" stroke-linecap="round"/>
+  <rect x="118" y="55" width="12" height="22" rx="2" fill="#4a9e8e"/>
+  <!-- Trend arrow -->
+  <polyline points="55,95 80,75 105,65 135,45" fill="none" stroke="#4a9e8e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  <polygon points="135,45 128,52 132,42" fill="#4a9e8e"/>
 </svg>

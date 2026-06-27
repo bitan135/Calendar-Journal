@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
@@ -70,7 +70,7 @@ function Section({
   const [open, setOpen] = useState(defaultOpen);
 
   return (
-    <div className="glass-card rounded-lg overflow-hidden border border-white/5 shadow-sm">
+    <div className="glass-card rounded-lg overflow-hidden border border-border shadow-sm">
       <button
         type="button"
         onClick={() => setOpen(!open)}
@@ -100,6 +100,7 @@ function Section({
 export default function TradeForm({ mode, initialDate, existingTrade }: TradeFormProps) {
   const router = useRouter();
   const [saving, setSaving] = useState(false);
+  const saveInProgress = useRef(false);
   const [images, setImages] = useState<{ file?: File; existing?: TradeImageType; type: ImageType; preview: string }[]>([]);
 
   const defaultDate = initialDate || existingTrade?.date || new Date().toISOString().split('T')[0];
@@ -147,6 +148,18 @@ export default function TradeForm({ mode, initialDate, existingTrade }: TradeFor
     }
   }, [mode, existingTrade?.id]);
 
+  // Cleanup image preview URLs on unmount
+  useEffect(() => {
+    return () => {
+      images.forEach((img) => {
+        if (img.preview && !img.existing) {
+          URL.revokeObjectURL(img.preview);
+        }
+      });
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   // Auto-calculate RR
   useEffect(() => {
     const entry = parseFloat(form.entryPrice);
@@ -188,11 +201,15 @@ export default function TradeForm({ mode, initialDate, existingTrade }: TradeFor
   };
 
   const handleSave = async () => {
+    // Ref-based lock to prevent double submission (covers race conditions)
+    if (saveInProgress.current) return;
+    
     if (!form.asset.trim()) {
       toast.error('Please enter an asset');
       return;
     }
 
+    saveInProgress.current = true;
     setSaving(true);
     try {
       const tradeData = {
@@ -246,6 +263,7 @@ export default function TradeForm({ mode, initialDate, existingTrade }: TradeFor
       toast.error('Failed to save trade');
     }
     setSaving(false);
+    saveInProgress.current = false;
   };
 
   const beforeImages = images.filter((img) => img.type === 'before_entry');
@@ -261,7 +279,7 @@ export default function TradeForm({ mode, initialDate, existingTrade }: TradeFor
         <div>
           <Label className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/60 mb-1.5 block">Asset</Label>
           <Select value={form.asset} onValueChange={(v) => updateField('asset', v)}>
-            <SelectTrigger className="border-white/5 bg-[#2c2c2e]/40">
+            <SelectTrigger className="border-border bg-secondary/40">
               <SelectValue placeholder="Select asset" />
             </SelectTrigger>
             <SelectContent>
@@ -344,8 +362,8 @@ export default function TradeForm({ mode, initialDate, existingTrade }: TradeFor
               className={`
                 py-2 rounded-lg text-xs font-semibold transition-all active:scale-[0.98] cursor-pointer border
                 ${form.session === session.value
-                  ? 'bg-[#2c2c2e] text-white border-white/10'
-                  : 'bg-[#2c2c2e]/40 text-muted-foreground hover:bg-[#2c2c2e]/60 border-transparent'
+                  ? 'bg-secondary text-foreground border-border'
+                  : 'bg-secondary/40 text-muted-foreground hover:bg-secondary/60 border-transparent'
                 }
               `}
             >
@@ -502,8 +520,8 @@ export default function TradeForm({ mode, initialDate, existingTrade }: TradeFor
               className={`
                 py-1.5 rounded-lg text-xs font-semibold transition-all active:scale-[0.98] cursor-pointer border
                 ${form.bias15M === bias.value
-                  ? 'bg-[#2c2c2e] text-white border-white/10'
-                  : 'bg-[#2c2c2e]/40 text-muted-foreground hover:bg-[#2c2c2e]/60 border-transparent'
+                  ? 'bg-secondary text-foreground border-border'
+                  : 'bg-secondary/40 text-muted-foreground hover:bg-secondary/60 border-transparent'
                 }
               `}
             >
@@ -519,7 +537,7 @@ export default function TradeForm({ mode, initialDate, existingTrade }: TradeFor
       <Section title="Execution Checklist" defaultOpen={false}>
         <div className="space-y-3.5">
           {/* Inducement */}
-          <div className="flex items-center gap-3 p-3 rounded-lg bg-[#2c2c2e]/40 border border-white/5 shadow-sm">
+          <div className="flex items-center gap-3 p-3 rounded-lg bg-secondary/40 border border-border shadow-sm">
             <Checkbox
               id="inducement"
               checked={form.inducementPresent}
@@ -534,7 +552,7 @@ export default function TradeForm({ mode, initialDate, existingTrade }: TradeFor
           <div>
             <Label className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/60 mb-1.5 block">POI Type</Label>
             <Select value={form.poiType} onValueChange={(v) => updateField('poiType', v)}>
-              <SelectTrigger className="border-white/5 bg-[#2c2c2e]/40">
+              <SelectTrigger className="border-border bg-secondary/40">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -549,7 +567,7 @@ export default function TradeForm({ mode, initialDate, existingTrade }: TradeFor
           <div>
             <Label className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/60 mb-1.5 block">Entry Model</Label>
             <Select value={form.entryModel} onValueChange={(v) => updateField('entryModel', v)}>
-              <SelectTrigger className="border-white/5 bg-[#2c2c2e]/40">
+              <SelectTrigger className="border-border bg-secondary/40">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -571,7 +589,7 @@ export default function TradeForm({ mode, initialDate, existingTrade }: TradeFor
           <div>
             <Label className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/60 mb-2 block">Before Entry</Label>
             {beforeImages.map((img, i) => (
-              <div key={i} className="relative mb-2 rounded-lg overflow-hidden group border border-white/5 shadow-sm">
+              <div key={i} className="relative mb-2 rounded-lg overflow-hidden group border border-border shadow-sm">
                 <img src={img.preview} alt="Before entry" className="w-full h-24 object-cover" />
                 <button
                   type="button"
@@ -587,7 +605,7 @@ export default function TradeForm({ mode, initialDate, existingTrade }: TradeFor
             <button
               type="button"
               onClick={() => handleImageUpload('before_entry')}
-              className="w-full py-3 rounded-lg border border-dashed border-white/10 flex flex-col items-center gap-1 text-muted-foreground/60 hover:bg-white/5 hover:text-foreground transition-all cursor-pointer"
+              className="w-full py-3 rounded-lg border border-dashed border-border flex flex-col items-center gap-1 text-muted-foreground/60 hover:bg-secondary/40 hover:text-foreground transition-all cursor-pointer"
             >
               <Upload className="w-3.5 h-3.5" />
               <span className="text-[9px] font-semibold uppercase tracking-wider">Upload</span>
@@ -598,7 +616,7 @@ export default function TradeForm({ mode, initialDate, existingTrade }: TradeFor
           <div>
             <Label className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/60 mb-2 block">After Trade</Label>
             {afterImages.map((img, i) => (
-              <div key={i} className="relative mb-2 rounded-lg overflow-hidden group border border-white/5 shadow-sm">
+              <div key={i} className="relative mb-2 rounded-lg overflow-hidden group border border-border shadow-sm">
                 <img src={img.preview} alt="After trade" className="w-full h-24 object-cover" />
                 <button
                   type="button"
@@ -614,7 +632,7 @@ export default function TradeForm({ mode, initialDate, existingTrade }: TradeFor
             <button
               type="button"
               onClick={() => handleImageUpload('after_trade')}
-              className="w-full py-3 rounded-lg border border-dashed border-white/10 flex flex-col items-center gap-1 text-muted-foreground/60 hover:bg-white/5 hover:text-foreground transition-all cursor-pointer"
+              className="w-full py-3 rounded-lg border border-dashed border-border flex flex-col items-center gap-1 text-muted-foreground/60 hover:bg-secondary/40 hover:text-foreground transition-all cursor-pointer"
             >
               <Upload className="w-3.5 h-3.5" />
               <span className="text-[9px] font-semibold uppercase tracking-wider">Upload</span>
@@ -655,7 +673,7 @@ export default function TradeForm({ mode, initialDate, existingTrade }: TradeFor
         <button
           onClick={handleSave}
           disabled={saving}
-          className="w-full py-2.5 rounded-full bg-primary text-white font-semibold text-xs flex items-center justify-center gap-1.5 hover:opacity-90 transition-all active:scale-[0.98] disabled:opacity-50 shadow-md cursor-pointer border border-white/10"
+          className="w-full py-2.5 rounded-full bg-primary text-primary-foreground font-semibold text-xs flex items-center justify-center gap-1.5 hover:opacity-90 transition-all active:scale-[0.98] disabled:opacity-50 shadow-md cursor-pointer border border-border"
         >
           <Save className="w-3.5 h-3.5" />
           {saving ? 'Saving...' : mode === 'edit' ? 'Update Trade' : 'Save Trade'}

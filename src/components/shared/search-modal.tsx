@@ -3,10 +3,10 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { CommandDialog, CommandInput, CommandList, CommandEmpty, CommandGroup, CommandItem } from '@/components/ui/command';
-import { Search, TrendingUp, TrendingDown, Calendar } from 'lucide-react';
+import { TrendingUp, TrendingDown } from 'lucide-react';
 import { useSearchTrades } from '@/lib/hooks/use-trades';
 import { formatCurrency, formatDate, getPnLColor } from '@/lib/utils/formatters';
-import { SESSION_LABELS, ENTRY_MODEL_LABELS } from '@/lib/utils/constants';
+import { SESSION_LABELS } from '@/lib/utils/constants';
 
 interface SearchModalProps {
   open: boolean;

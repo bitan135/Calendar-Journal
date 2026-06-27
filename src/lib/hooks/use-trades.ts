@@ -128,18 +128,24 @@ export function useSearchTrades(query: string, delay: number = 300) {
   // Debounce the query string
   useEffect(() => {
     if (!query.trim()) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setDebouncedQuery('');
-      setLoading(false);
-      return;
+      const timer = setTimeout(() => {
+        setDebouncedQuery('');
+        setLoading(false);
+      }, 0);
+      return () => clearTimeout(timer);
     }
 
-    setLoading(true);
+    const loadTimer = setTimeout(() => {
+      setLoading(true);
+    }, 0);
     const timer = setTimeout(() => {
       setDebouncedQuery(query);
     }, delay);
 
-    return () => clearTimeout(timer);
+    return () => {
+      clearTimeout(loadTimer);
+      clearTimeout(timer);
+    };
   }, [query, delay]);
 
   // Fetch results when debounced query changes
@@ -148,8 +154,16 @@ export function useSearchTrades(query: string, delay: number = 300) {
     let active = true;
     
     if (!debouncedQuery.trim()) {
-      if (active) setResults([]);
-      return;
+      const timer = setTimeout(() => {
+        if (active) {
+          setResults([]);
+          setLoading(false);
+        }
+      }, 0);
+      return () => {
+        active = false;
+        clearTimeout(timer);
+      };
     }
 
     searchTrades(debouncedQuery).then((res) => {

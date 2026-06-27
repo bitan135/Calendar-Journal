@@ -41,7 +41,7 @@ function SelectTrigger({
       data-slot="select-trigger"
       data-size={size}
       className={cn(
-        "flex w-full items-center justify-between gap-1.5 rounded-lg border border-white/5 bg-[#2c2c2e]/40 py-1.5 pr-2.5 pl-3 text-xs whitespace-nowrap transition-colors outline-none select-none focus-visible:border-primary disabled:cursor-not-allowed disabled:opacity-50 data-placeholder:text-muted-foreground/50 data-[size=default]:h-9 data-[size=sm]:h-8 data-[size=sm]:rounded-lg *:data-[slot=select-value]:line-clamp-1 *:data-[slot=select-value]:flex *:data-[slot=select-value]:items-center *:data-[slot=select-value]:gap-1.5 dark:bg-[#2c2c2e]/40 dark:hover:bg-[#2c2c2e]/60 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-3.5",
+        "flex w-full items-center justify-between gap-1.5 rounded-lg border border-border bg-secondary/40 py-1.5 pr-2.5 pl-3 text-xs whitespace-nowrap transition-colors outline-none select-none focus-visible:border-primary disabled:cursor-not-allowed disabled:opacity-50 data-placeholder:text-muted-foreground/50 data-[size=default]:h-9 data-[size=sm]:h-8 data-[size=sm]:rounded-lg *:data-[slot=select-value]:line-clamp-1 *:data-[slot=select-value]:flex *:data-[slot=select-value]:items-center *:data-[slot=select-value]:gap-1.5 hover:bg-secondary/60 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-3.5",
         className
       )}
       {...props}
